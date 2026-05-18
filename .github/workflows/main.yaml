@@ -3,7 +3,7 @@ name: Build and Deploy Bank App Backend
 on:
   push:
     branches:
-      - trunk
+      - master
 
 permissions:
   contents: read
@@ -23,11 +23,11 @@ jobs:
       - name: Build Docker image
         run: |
           docker build --no-cache \
-            -t ghcr.io/ruziba3vich/bank-app:latest .
+            -t ghcr.io/progonik/bank-app:latest .
 
       - name: Push Docker image
         run: |
-          docker push ghcr.io/ruziba3vich/bank-app:latest
+          docker push ghcr.io/progonik/bank-app:latest
 
   deploy:
     needs: build
@@ -42,10 +42,10 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script_stop: true
-          envs: DB_HOST,DB_PORT,DB_USER,DB_PASSWORD,DB_NAME,DB_SSLMODE,SERVER_PORT,JWT_SECRET,ACCESS_TOKEN_EXPIRY,REFRESH_TOKEN_EXPIRY,GHCR_TOKEN
+          envs: DB_HOST,DB_PORT,DB_USER,DB_PASSWORD,DB_NAME,DB_SSLMODE,SERVER_PORT,JWT_SECRET,ACCESS_TOKEN_EXPIRY,REFRESH_TOKEN_EXPIRY,SQB_BASE_URL,SQB_LOCAL_ADDR,BIRDARCHA_BASE_URL,BIRDARCHA_SYNC_INTERVAL,BIRDARCHA_CUTOFF_DATE,GHCR_TOKEN
           script: |
             echo "Logging in to GHCR..."
-            echo "$GHCR_TOKEN" | docker login ghcr.io -u ruziba3vich --password-stdin
+            echo "$GHCR_TOKEN" | docker login ghcr.io -u progonik --password-stdin
 
             echo "Writing .env file..."
             mkdir -p ~/bank-app
@@ -60,6 +60,11 @@ jobs:
             JWT_SECRET=$JWT_SECRET
             ACCESS_TOKEN_EXPIRY=$ACCESS_TOKEN_EXPIRY
             REFRESH_TOKEN_EXPIRY=$REFRESH_TOKEN_EXPIRY
+            SQB_BASE_URL=$SQB_BASE_URL
+            SQB_LOCAL_ADDR=$SQB_LOCAL_ADDR
+            BIRDARCHA_BASE_URL=$BIRDARCHA_BASE_URL
+            BIRDARCHA_SYNC_INTERVAL=$BIRDARCHA_SYNC_INTERVAL
+            BIRDARCHA_CUTOFF_DATE=$BIRDARCHA_CUTOFF_DATE
             GIN_MODE=release
             EOF
             chmod 600 ~/bank-app/.env
@@ -69,10 +74,10 @@ jobs:
             docker rm bank-app || true
 
             echo "Removing old image..."
-            docker rmi ghcr.io/ruziba3vich/bank-app:latest || true
+            docker rmi ghcr.io/progonik/bank-app:latest || true
 
             echo "Pulling latest image..."
-            docker pull ghcr.io/ruziba3vich/bank-app:latest
+            docker pull ghcr.io/progonik/bank-app:latest
 
             echo "Starting new container..."
             docker run -d \
@@ -80,7 +85,7 @@ jobs:
               --name bank-app \
               --network host \
               --env-file ~/bank-app/.env \
-              ghcr.io/ruziba3vich/bank-app:latest
+              ghcr.io/progonik/bank-app:latest
 
             echo "Deployment successful!"
         env:
@@ -94,4 +99,9 @@ jobs:
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
           ACCESS_TOKEN_EXPIRY: ${{ secrets.ACCESS_TOKEN_EXPIRY }}
           REFRESH_TOKEN_EXPIRY: ${{ secrets.REFRESH_TOKEN_EXPIRY }}
+          SQB_BASE_URL: ${{ secrets.SQB_BASE_URL }}
+          SQB_LOCAL_ADDR: ${{ secrets.SQB_LOCAL_ADDR }}
+          BIRDARCHA_BASE_URL: ${{ secrets.BIRDARCHA_BASE_URL }}
+          BIRDARCHA_SYNC_INTERVAL: ${{ secrets.BIRDARCHA_SYNC_INTERVAL }}
+          BIRDARCHA_CUTOFF_DATE: ${{ secrets.BIRDARCHA_CUTOFF_DATE }}
           GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}
