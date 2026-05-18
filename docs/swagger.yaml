@@ -1,0 +1,1252 @@
+basePath: /api/v1
+definitions:
+  dto.AuthResponse:
+    properties:
+      access_token:
+        type: string
+      device_id:
+        type: string
+      refresh_token:
+        type: string
+      user:
+        $ref: '#/definitions/dto.UserResponse'
+    type: object
+  dto.CityListResponse:
+    properties:
+      cities:
+        items:
+          $ref: '#/definitions/dto.CityResponse'
+        type: array
+      limit:
+        type: integer
+      offset:
+        type: integer
+      total:
+        type: integer
+    type: object
+  dto.CityResponse:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  dto.CreateCityRequest:
+    properties:
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  dto.CreateEntrepreneurRequest:
+    properties:
+      activity_status:
+        type: boolean
+      address:
+        type: string
+      charter_fund:
+        type: integer
+      dbibt_code:
+        type: integer
+      director_name:
+        type: string
+      email:
+        type: string
+      founders:
+        type: string
+      ifut_code:
+        type: string
+      inn:
+        maxLength: 14
+        minLength: 9
+        type: string
+      legal_form:
+        type: string
+      legal_name:
+        type: string
+      mhobt_code:
+        type: string
+      phone:
+        maxLength: 32
+        minLength: 9
+        type: string
+      registration_authority:
+        type: string
+      registration_date:
+        type: string
+      registration_number:
+        type: string
+    required:
+    - email
+    - inn
+    - phone
+    - registration_date
+    type: object
+  dto.EntrepreneurListResponse:
+    properties:
+      entrepreneurs:
+        items:
+          $ref: '#/definitions/dto.EntrepreneurResponse'
+        type: array
+      limit:
+        type: integer
+      offset:
+        type: integer
+      total:
+        type: integer
+    type: object
+  dto.EntrepreneurResponse:
+    properties:
+      activity_status:
+        type: boolean
+      address:
+        type: string
+      charter_fund:
+        type: integer
+      created_at:
+        type: string
+      dbibt_code:
+        type: integer
+      director_name:
+        type: string
+      email:
+        type: string
+      founders:
+        type: string
+      id:
+        type: string
+      ifut_code_id:
+        type: string
+      ifut_code_name:
+        type: string
+      inn_id:
+        type: string
+      inn_name:
+        type: string
+      legal_form:
+        type: string
+      legal_name:
+        type: string
+      mhobt_code:
+        type: string
+      phone:
+        type: string
+      registration_authority:
+        type: string
+      registration_date:
+        type: string
+      registration_number:
+        type: string
+      sqb_api_error:
+        type: string
+    type: object
+  dto.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  dto.IfutCodeListResponse:
+    properties:
+      ifut_codes:
+        items:
+          $ref: '#/definitions/dto.IfutCodeResponse'
+        type: array
+      limit:
+        type: integer
+      offset:
+        type: integer
+      total:
+        type: integer
+    type: object
+  dto.IfutCodeResponse:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  dto.InnListResponse:
+    properties:
+      inns:
+        items:
+          $ref: '#/definitions/dto.InnResponse'
+        type: array
+      limit:
+        type: integer
+      offset:
+        type: integer
+      total:
+        type: integer
+    type: object
+  dto.InnResponse:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  dto.LoginRequest:
+    properties:
+      login:
+        type: string
+      password:
+        type: string
+    required:
+    - login
+    - password
+    type: object
+  dto.RefreshRequest:
+    properties:
+      device_id:
+        type: string
+      refresh_token:
+        type: string
+    required:
+    - device_id
+    - refresh_token
+    type: object
+  dto.RegisterRequest:
+    properties:
+      full_name:
+        type: string
+      login:
+        minLength: 3
+        type: string
+      password:
+        minLength: 8
+        type: string
+      role:
+        type: string
+    required:
+    - full_name
+    - login
+    - password
+    type: object
+  dto.UpdateBirdarchaTokenRequest:
+    properties:
+      token:
+        type: string
+    required:
+    - token
+    type: object
+  dto.UpdateCityRequest:
+    properties:
+      name:
+        type: string
+    type: object
+  dto.UpdateEntrepreneurRequest:
+    properties:
+      activity_status:
+        type: boolean
+      address:
+        type: string
+      charter_fund:
+        type: integer
+      dbibt_code:
+        type: integer
+      director_name:
+        type: string
+      email:
+        type: string
+      founders:
+        type: string
+      ifut_code:
+        type: string
+      legal_form:
+        type: string
+      legal_name:
+        type: string
+      mhobt_code:
+        type: string
+      phone:
+        type: string
+      registration_authority:
+        type: string
+      registration_date:
+        type: string
+      registration_number:
+        type: string
+    type: object
+  dto.UpdateUserRequest:
+    properties:
+      full_name:
+        type: string
+      role:
+        type: string
+      status:
+        type: boolean
+    type: object
+  dto.UserListResponse:
+    properties:
+      limit:
+        type: integer
+      offset:
+        type: integer
+      total:
+        type: integer
+      users:
+        items:
+          $ref: '#/definitions/dto.UserResponse'
+        type: array
+    type: object
+  dto.UserResponse:
+    properties:
+      created_at:
+        type: string
+      full_name:
+        type: string
+      id:
+        type: string
+      login:
+        type: string
+      role:
+        type: string
+      status:
+        type: boolean
+    type: object
+host: bank-app-back.compile-me.uz
+info:
+  contact: {}
+  description: Authentication service for the Bank App
+  title: Bank App API
+  version: "1.0"
+paths:
+  /cities:
+    get:
+      description: Returns a paginated list of cities with optional name search
+      parameters:
+      - description: Search by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: Limit (default 20, max 100)
+        in: query
+        name: limit
+        type: integer
+      - description: Offset (default 0)
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Cities list
+          schema:
+            $ref: '#/definitions/dto.CityListResponse'
+        "400":
+          description: Invalid query parameters
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get all cities
+      tags:
+      - cities
+    post:
+      consumes:
+      - application/json
+      description: Creates a new city with the given name
+      parameters:
+      - description: City details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateCityRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: City created
+          schema:
+            $ref: '#/definitions/dto.CityResponse'
+        "400":
+          description: Validation error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Create a new city
+      tags:
+      - cities
+  /cities/{id}:
+    delete:
+      description: Deletes a city by its UUID
+      parameters:
+      - description: City ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: City deleted
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Invalid UUID
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: City not found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete city
+      tags:
+      - cities
+    get:
+      description: Returns a city by its UUID
+      parameters:
+      - description: City ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: City found
+          schema:
+            $ref: '#/definitions/dto.CityResponse'
+        "400":
+          description: Invalid UUID
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: City not found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get city by ID
+      tags:
+      - cities
+    put:
+      consumes:
+      - application/json
+      description: Updates a city's name
+      parameters:
+      - description: City ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Fields to update
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateCityRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: City updated
+          schema:
+            $ref: '#/definitions/dto.CityResponse'
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: City not found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Update city
+      tags:
+      - cities
+  /entrepreneurs:
+    get:
+      description: Returns a paginated list of entrepreneurs with optional filters
+      parameters:
+      - description: Search by legal name (partial match)
+        in: query
+        name: legal_name
+        type: string
+      - description: Search by INN name (partial match)
+        in: query
+        name: inn_name
+        type: string
+      - description: Filter by activity status
+        in: query
+        name: activity_status
+        type: boolean
+      - description: Search by director name (partial match)
+        in: query
+        name: director_name
+        type: string
+      - description: Filter from date (YYYY-MM-DD, e.g. 2024-01-01)
+        in: query
+        name: date_from
+        type: string
+      - description: Filter to date inclusive (YYYY-MM-DD, e.g. 2024-12-31)
+        in: query
+        name: date_to
+        type: string
+      - description: Limit (default 20, max 100)
+        in: query
+        name: limit
+        type: integer
+      - description: Offset (default 0)
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Entrepreneurs list
+          schema:
+            $ref: '#/definitions/dto.EntrepreneurListResponse'
+        "400":
+          description: Invalid query parameters
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get all entrepreneurs
+      tags:
+      - entrepreneurs
+    post:
+      consumes:
+      - application/json
+      description: Creates a new entrepreneur. If the INN name exists, it binds the
+        existing INN; otherwise creates a new one.
+      parameters:
+      - description: Entrepreneur details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateEntrepreneurRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Entrepreneur created
+          schema:
+            $ref: '#/definitions/dto.EntrepreneurResponse'
+        "400":
+          description: Validation error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Create a new entrepreneur
+      tags:
+      - entrepreneurs
+  /entrepreneurs/{id}:
+    delete:
+      description: Deletes an entrepreneur by its UUID
+      parameters:
+      - description: Entrepreneur ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Entrepreneur deleted
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Invalid UUID
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: Entrepreneur not found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete entrepreneur
+      tags:
+      - entrepreneurs
+    get:
+      description: Returns an entrepreneur by its UUID
+      parameters:
+      - description: Entrepreneur ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Entrepreneur found
+          schema:
+            $ref: '#/definitions/dto.EntrepreneurResponse'
+        "400":
+          description: Invalid UUID
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: Entrepreneur not found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get entrepreneur by ID
+      tags:
+      - entrepreneurs
+    put:
+      consumes:
+      - application/json
+      description: Updates an entrepreneur's fields
+      parameters:
+      - description: Entrepreneur ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Fields to update
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateEntrepreneurRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Entrepreneur updated
+          schema:
+            $ref: '#/definitions/dto.EntrepreneurResponse'
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: Entrepreneur not found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Update entrepreneur
+      tags:
+      - entrepreneurs
+  /entrepreneurs/birdarcha-token:
+    put:
+      consumes:
+      - application/json
+      description: Updates the birdarcha API access token used by the background syncer
+      parameters:
+      - description: New token
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateBirdarchaTokenRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Token updated
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Update birdarcha access token
+      tags:
+      - entrepreneurs
+  /entrepreneurs/sqb-failed:
+    get:
+      description: Returns a paginated list of entrepreneurs that failed to send to
+        SQB
+      parameters:
+      - description: Limit (default 20, max 100)
+        in: query
+        name: limit
+        type: integer
+      - description: Offset (default 0)
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Failed entrepreneurs list
+          schema:
+            $ref: '#/definitions/dto.EntrepreneurListResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get entrepreneurs with SQB errors
+      tags:
+      - entrepreneurs
+  /entrepreneurs/sqb-retry:
+    post:
+      description: Fetches all entrepreneurs with sqb_api_error and resends them to
+        SQB. Clears the error on success.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Retry results
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Retry sending failed entrepreneurs to SQB
+      tags:
+      - entrepreneurs
+  /ifut-codes:
+    get:
+      description: Returns a paginated list of IFUT codes with optional name search
+      parameters:
+      - description: Search by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: Limit (default 20, max 100)
+        in: query
+        name: limit
+        type: integer
+      - description: Offset (default 0)
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: IFUT codes list
+          schema:
+            $ref: '#/definitions/dto.IfutCodeListResponse'
+        "400":
+          description: Invalid query parameters
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get all IFUT codes
+      tags:
+      - ifut-codes
+  /inns:
+    get:
+      description: Returns a paginated list of INNs with optional name search
+      parameters:
+      - description: Search by name (partial match)
+        in: query
+        name: name
+        type: string
+      - description: Limit (default 20, max 100)
+        in: query
+        name: limit
+        type: integer
+      - description: Offset (default 0)
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: INNs list
+          schema:
+            $ref: '#/definitions/dto.InnListResponse'
+        "400":
+          description: Invalid query parameters
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get all INNs
+      tags:
+      - inns
+  /users:
+    get:
+      description: Returns a paginated list of users with optional filters
+      parameters:
+      - description: Filter by full name (partial match)
+        in: query
+        name: full_name
+        type: string
+      - description: Filter by role
+        in: query
+        name: role
+        type: string
+      - description: Filter by login (partial match)
+        in: query
+        name: login
+        type: string
+      - description: Filter by status
+        in: query
+        name: status
+        type: boolean
+      - description: Filter by created_at >= (RFC3339)
+        in: query
+        name: created_from
+        type: string
+      - description: Filter by created_at <= (RFC3339)
+        in: query
+        name: created_to
+        type: string
+      - description: Limit (default 20, max 100)
+        in: query
+        name: limit
+        type: integer
+      - description: Offset (default 0)
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Users list
+          schema:
+            $ref: '#/definitions/dto.UserListResponse'
+        "400":
+          description: Invalid query parameters
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get all users
+      tags:
+      - users
+  /users/{id}:
+    delete:
+      description: Deletes a user and all their sessions
+      parameters:
+      - description: User ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User deleted
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Invalid UUID
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete user
+      tags:
+      - users
+    get:
+      description: Returns a user by their UUID
+      parameters:
+      - description: User ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User found
+          schema:
+            $ref: '#/definitions/dto.UserResponse'
+        "400":
+          description: Invalid UUID
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get user by ID
+      tags:
+      - users
+    put:
+      consumes:
+      - application/json
+      description: Updates a user's full_name, role, or status
+      parameters:
+      - description: User ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Fields to update
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User updated
+          schema:
+            $ref: '#/definitions/dto.UserResponse'
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Update user
+      tags:
+      - users
+  /users/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticates user and returns access and refresh tokens
+      parameters:
+      - description: Login credentials
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Login successful
+          schema:
+            $ref: '#/definitions/dto.AuthResponse'
+        "400":
+          description: Validation error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "401":
+          description: Invalid credentials
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "403":
+          description: User account is inactive
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Login user
+      tags:
+      - users
+  /users/logout:
+    post:
+      description: Invalidates all active sessions for the authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Logged out successfully
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Logout user
+      tags:
+      - users
+  /users/me:
+    get:
+      description: Returns the authenticated user's profile
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User profile
+          schema:
+            $ref: '#/definitions/dto.UserResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get current user
+      tags:
+      - users
+  /users/refresh:
+    post:
+      consumes:
+      - application/json
+      description: Rotates the refresh token and returns a new token pair
+      parameters:
+      - description: Refresh token and device ID
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RefreshRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Tokens refreshed successfully
+          schema:
+            $ref: '#/definitions/dto.AuthResponse'
+        "400":
+          description: Validation error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "401":
+          description: Invalid or expired refresh token
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "403":
+          description: User account is inactive
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Refresh access token
+      tags:
+      - users
+  /users/register:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new user account with the provided details
+      parameters:
+      - description: Registration details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: User created successfully
+          schema:
+            $ref: '#/definitions/dto.UserResponse'
+        "400":
+          description: Validation error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "409":
+          description: Login already exists
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Register a new user
+      tags:
+      - users
+securityDefinitions:
+  BearerAuth:
+    description: Enter "Bearer {token}"
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

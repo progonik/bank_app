@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Birdarcha Token Sync</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      width: 320px;
+      background: #f8f9fa;
+      color: #212529;
+    }
+
+    header {
+      background: #1a73e8;
+      color: white;
+      padding: 14px 16px;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .section {
+      padding: 14px 16px;
+      border-bottom: 1px solid #e9ecef;
+      background: white;
+    }
+
+    .section:last-child { border-bottom: none; }
+
+    .section-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #6c757d;
+      margin-bottom: 10px;
+    }
+
+    .status-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .dot.idle    { background: #adb5bd; }
+    .dot.ok      { background: #28a745; }
+    .dot.error   { background: #dc3545; }
+    .dot.loading { background: #fd7e14; animation: pulse 1s infinite; }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.4; }
+    }
+
+    .status-text { color: #495057; }
+
+    button {
+      width: 100%;
+      padding: 9px 0;
+      background: #1a73e8;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    button:hover:not(:disabled) { background: #1558b0; }
+    button:disabled { background: #adb5bd; cursor: default; }
+
+    label {
+      display: block;
+      font-size: 12px;
+      color: #495057;
+      margin-bottom: 4px;
+    }
+
+    input[type="text"], input[type="password"] {
+      width: 100%;
+      padding: 7px 10px;
+      border: 1px solid #ced4da;
+      border-radius: 5px;
+      font-size: 13px;
+      margin-bottom: 10px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    input:focus { border-color: #1a73e8; }
+
+    .save-btn {
+      background: #28a745;
+    }
+
+    .save-btn:hover:not(:disabled) { background: #1e7e34; }
+
+    .token-preview {
+      font-family: monospace;
+      font-size: 11px;
+      color: #6c757d;
+      word-break: break-all;
+      background: #f8f9fa;
+      padding: 6px 8px;
+      border-radius: 4px;
+      border: 1px solid #e9ecef;
+      max-height: 52px;
+      overflow: hidden;
+      margin-top: 6px;
+    }
+  </style>
+</head>
+<body>
+  <header>Birdarcha Token Sync</header>
+
+  <div class="section" id="sync-section">
+    <div class="section-title">Sync</div>
+    <div class="status-row" style="margin-bottom: 12px;">
+      <span class="dot idle" id="status-dot"></span>
+      <span class="status-text" id="status-text">Ready</span>
+    </div>
+    <button id="sync-btn">Sync Token</button>
+    <div class="token-preview" id="token-preview" style="display:none;"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Settings</div>
+    <label for="backend-url">Backend URL</label>
+    <input type="text" id="backend-url" placeholder="http://localhost:8080" />
+    <label for="app-token">Bank App Access Token</label>
+    <input type="password" id="app-token" placeholder="Bearer token for /api/v1/..." />
+    <label for="storage-key">localStorage Key</label>
+    <input type="text" id="storage-key" placeholder="access_token" />
+    <button class="save-btn" id="save-btn">Save Settings</button>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

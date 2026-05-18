@@ -1,0 +1,20 @@
+CREATE TABLE entrepreneurs (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    inn_id UUID NOT NULL REFERENCES inns(id),
+    legal_name VARCHAR(255) NOT NULL DEFAULT '',
+    registration_authority VARCHAR(255) NOT NULL DEFAULT '',
+    registration_date VARCHAR(255) NOT NULL DEFAULT '',
+    registration_number VARCHAR(255) NOT NULL DEFAULT '',
+    legal_form VARCHAR(255) NOT NULL DEFAULT '',
+    ifut_code INT NOT NULL DEFAULT 0,
+    dbibt_code INT NOT NULL DEFAULT 0,
+    activity_status BOOLEAN NOT NULL DEFAULT true,
+    charter_fund INT NOT NULL DEFAULT 0,
+    founders VARCHAR(255) NOT NULL DEFAULT '',
+    email VARCHAR(255) NOT NULL DEFAULT '',
+    phone VARCHAR(255) NOT NULL DEFAULT '',
+    mhobt_code VARCHAR(255) NOT NULL DEFAULT '',
+    address VARCHAR(255) NOT NULL DEFAULT '',
+    director_name VARCHAR(255) NOT NULL DEFAULT '',
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);

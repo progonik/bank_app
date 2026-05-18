@@ -1,0 +1,97 @@
+name: Build and Deploy Bank App Backend
+
+on:
+  push:
+    branches:
+      - trunk
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        run: echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Build Docker image
+        run: |
+          docker build --no-cache \
+            -t ghcr.io/ruziba3vich/bank-app:latest .
+
+      - name: Push Docker image
+        run: |
+          docker push ghcr.io/ruziba3vich/bank-app:latest
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to Server
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script_stop: true
+          envs: DB_HOST,DB_PORT,DB_USER,DB_PASSWORD,DB_NAME,DB_SSLMODE,SERVER_PORT,JWT_SECRET,ACCESS_TOKEN_EXPIRY,REFRESH_TOKEN_EXPIRY,GHCR_TOKEN
+          script: |
+            echo "Logging in to GHCR..."
+            echo "$GHCR_TOKEN" | docker login ghcr.io -u ruziba3vich --password-stdin
+
+            echo "Writing .env file..."
+            mkdir -p ~/bank-app
+            cat > ~/bank-app/.env << EOF
+            DB_HOST=$DB_HOST
+            DB_PORT=$DB_PORT
+            DB_USER=$DB_USER
+            DB_PASSWORD=$DB_PASSWORD
+            DB_NAME=$DB_NAME
+            DB_SSLMODE=$DB_SSLMODE
+            SERVER_PORT=$SERVER_PORT
+            JWT_SECRET=$JWT_SECRET
+            ACCESS_TOKEN_EXPIRY=$ACCESS_TOKEN_EXPIRY
+            REFRESH_TOKEN_EXPIRY=$REFRESH_TOKEN_EXPIRY
+            GIN_MODE=release
+            EOF
+            chmod 600 ~/bank-app/.env
+
+            echo "Stopping old container (if exists)..."
+            docker stop bank-app || true
+            docker rm bank-app || true
+
+            echo "Removing old image..."
+            docker rmi ghcr.io/ruziba3vich/bank-app:latest || true
+
+            echo "Pulling latest image..."
+            docker pull ghcr.io/ruziba3vich/bank-app:latest
+
+            echo "Starting new container..."
+            docker run -d \
+              --restart always \
+              --name bank-app \
+              --network host \
+              --env-file ~/bank-app/.env \
+              ghcr.io/ruziba3vich/bank-app:latest
+
+            echo "Deployment successful!"
+        env:
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PORT: ${{ secrets.DB_PORT }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_SSLMODE: ${{ secrets.DB_SSLMODE }}
+          SERVER_PORT: ${{ secrets.SERVER_PORT }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          ACCESS_TOKEN_EXPIRY: ${{ secrets.ACCESS_TOKEN_EXPIRY }}
+          REFRESH_TOKEN_EXPIRY: ${{ secrets.REFRESH_TOKEN_EXPIRY }}
+          GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}

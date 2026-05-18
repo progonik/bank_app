@@ -1,0 +1,12 @@
+{
+  "manifest_version": 3,
+  "name": "Birdarcha Token Sync",
+  "version": "1.0.0",
+  "description": "Syncs Birdarcha access token to the bank app backend",
+  "permissions": ["storage", "scripting", "activeTab"],
+  "host_permissions": ["https://birdarcha.uz/*", "https://*.birdarcha.uz/*"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Birdarcha Token Sync"
+  }
+}

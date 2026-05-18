@@ -1,0 +1,10 @@
+.claude/
+.env
+*.exe
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+vendor/
+tmp/
