@@ -1,4 +1,4 @@
-const DEFAULT_STORAGE_KEY = 'access_token';
+const DEFAULT_STORAGE_KEY = 'persist:auth';
 
 const $ = id => document.getElementById(id);
 
@@ -42,9 +42,21 @@ async function readTokenFromPage(storageKey) {
     args: [storageKey],
   });
 
-  const token = results?.[0]?.result;
-  if (!token) throw new Error(`Key "${storageKey}" not found in localStorage`);
-  return token;
+  const raw = results?.[0]?.result;
+  if (!raw) throw new Error(`Key "${storageKey}" not found in localStorage`);
+
+  // Redux Persist double-encoded format:
+  // localStorage["persist:auth"] = JSON { tokens: JSON { accessToken: "..." } }
+  try {
+    const outer = JSON.parse(raw);
+    if (outer.tokens) {
+      const inner = JSON.parse(outer.tokens);
+      if (inner.accessToken) return inner.accessToken;
+    }
+  } catch (_) {}
+
+  // Fallback: treat the raw value as the token itself
+  return raw;
 }
 
 async function syncToken() {
