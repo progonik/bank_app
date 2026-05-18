@@ -73,16 +73,20 @@ func NewRouter(userHandler *handler.UserHandler, cityHandler *handler.CityHandle
 		}
 
 		entrepreneurs := v1.Group("/entrepreneurs")
-		entrepreneurs.Use(middleware.AuthMiddleware(jwtService))
 		{
-			entrepreneurs.POST("", entrepreneurHandler.Create)
-			entrepreneurs.GET("", entrepreneurHandler.GetAll)
-			entrepreneurs.GET("/sqb-failed", entrepreneurHandler.GetSqbFailed)
-			entrepreneurs.POST("/sqb-retry", entrepreneurHandler.RetrySqbFailed)
 			entrepreneurs.PUT("/birdarcha-token", entrepreneurHandler.UpdateBirdarchaToken)
-			entrepreneurs.GET("/:id", entrepreneurHandler.GetByID)
-			entrepreneurs.PUT("/:id", entrepreneurHandler.Update)
-			entrepreneurs.DELETE("/:id", entrepreneurHandler.Delete)
+
+			authenticated := entrepreneurs.Group("")
+			authenticated.Use(middleware.AuthMiddleware(jwtService))
+			{
+				authenticated.POST("", entrepreneurHandler.Create)
+				authenticated.GET("", entrepreneurHandler.GetAll)
+				authenticated.GET("/sqb-failed", entrepreneurHandler.GetSqbFailed)
+				authenticated.POST("/sqb-retry", entrepreneurHandler.RetrySqbFailed)
+				authenticated.GET("/:id", entrepreneurHandler.GetByID)
+				authenticated.PUT("/:id", entrepreneurHandler.Update)
+				authenticated.DELETE("/:id", entrepreneurHandler.Delete)
+			}
 		}
 	}
 

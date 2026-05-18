@@ -16,15 +16,13 @@ function showTokenPreview(token) {
 }
 
 async function loadSettings() {
-  const data = await chrome.storage.local.get(['backendUrl', 'appToken']);
+  const data = await chrome.storage.local.get(['backendUrl']);
   $('backend-url').value = data.backendUrl || '';
-  $('app-token').value   = data.appToken   || '';
 }
 
 async function saveSettings() {
   await chrome.storage.local.set({
     backendUrl: $('backend-url').value.trim().replace(/\/$/, ''),
-    appToken:   $('app-token').value.trim(),
   });
   setStatus('ok', 'Settings saved');
   setTimeout(() => setStatus('idle', 'Ready'), 1500);
@@ -58,22 +56,17 @@ async function readTokenFromPage(storageKey) {
 }
 
 async function syncToken() {
-  const data = await chrome.storage.local.get(['backendUrl', 'appToken']);
+  const data = await chrome.storage.local.get(['backendUrl']);
   const backendUrl = data.backendUrl;
-  const appToken   = data.appToken;
 
   if (!backendUrl) throw new Error('Backend URL is not configured');
-  if (!appToken)   throw new Error('Bank App access token is not configured');
 
   const birdarchaToken = await readTokenFromPage(DEFAULT_STORAGE_KEY);
   showTokenPreview(birdarchaToken);
 
   const resp = await fetch(`${backendUrl}/api/v1/entrepreneurs/birdarcha-token`, {
     method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${appToken}`,
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ token: birdarchaToken }),
   });
 
