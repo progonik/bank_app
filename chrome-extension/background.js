@@ -1,0 +1,71 @@
+const BACKEND_URL = 'https://bank-back.shoha-coder.uz';
+const POLL_INTERVAL_MINUTES = 2;
+
+chrome.alarms.create('poll', { periodInMinutes: POLL_INTERVAL_MINUTES });
+chrome.alarms.onAlarm.addListener(alarm => {
+  if (alarm.name === 'poll') checkAndSync();
+});
+
+// Run once on service worker startup
+checkAndSync();
+
+async function checkAndSync() {
+  try {
+    const resp = await fetch(`${BACKEND_URL}/api/v1/entrepreneurs/birdarcha-token/needs-refresh`);
+    if (!resp.ok) return;
+
+    const { needs_refresh } = await resp.json();
+    if (!needs_refresh) return;
+
+    const tabs = await chrome.tabs.query({ url: '*://*.birdarcha.uz/*' });
+    if (tabs.length === 0) return;
+
+    const tab = tabs[0];
+
+    await chrome.tabs.reload(tab.id);
+    await waitForTabLoad(tab.id);
+    await sleep(2000); // wait for the JS app to rehydrate localStorage
+
+    const results = await chrome.scripting.executeScript({
+      target: { tabId: tab.id },
+      func: extractToken,
+    });
+
+    const token = results?.[0]?.result;
+    if (!token) return;
+
+    await fetch(`${BACKEND_URL}/api/v1/entrepreneurs/birdarcha-token`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token }),
+    });
+  } catch (err) {
+    console.error('birdarcha auto-sync error:', err);
+  }
+}
+
+function extractToken() {
+  try {
+    const raw = localStorage.getItem('persist:auth');
+    if (!raw) return null;
+    const outer = JSON.parse(raw);
+    if (!outer.tokens) return null;
+    const inner = JSON.parse(outer.tokens);
+    return inner.accessToken || null;
+  } catch {
+    return null;
+  }
+}
+
+async function waitForTabLoad(tabId, timeout = 15000) {
+  const start = Date.now();
+  while (Date.now() - start < timeout) {
+    const tab = await chrome.tabs.get(tabId);
+    if (tab.status === 'complete') return;
+    await sleep(300);
+  }
+}
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}

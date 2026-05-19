@@ -307,6 +307,22 @@ func (h *EntrepreneurHandler) UpdateBirdarchaToken(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "birdarcha token updated"})
 }
 
+// CheckTokenRefreshNeeded godoc
+// @Summary Check if birdarcha token refresh is needed
+// @Description Returns whether the extension should reload birdarcha.uz and push a fresh token
+// @Tags entrepreneurs
+// @Produce json
+// @Success 200 {object} map[string]bool "needs_refresh flag"
+// @Router /entrepreneurs/birdarcha-token/needs-refresh [get]
+func (h *EntrepreneurHandler) CheckTokenRefreshNeeded(c *gin.Context) {
+	needed, err := h.entrepreneurService.NeedsTokenRefresh(c.Request.Context())
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{Error: "internal server error"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"needs_refresh": needed})
+}
+
 func parseEntrepreneurFilter(c *gin.Context) (domain.EntrepreneurFilter, error) {
 	var filter domain.EntrepreneurFilter
 

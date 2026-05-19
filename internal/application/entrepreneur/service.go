@@ -285,7 +285,29 @@ func (s *Service) UpdateBirdarchaToken(ctx context.Context, token string) error 
 		VALUES ('birdarcha_token', $1, NOW())
 		ON CONFLICT (key) DO UPDATE SET value = $1, updated_at = NOW()
 	`, token)
-	return err
+	if err != nil {
+		return err
+	}
+	_, _ = s.db.ExecContext(ctx, `
+		INSERT INTO syncer_state (key, value, updated_at)
+		VALUES ('birdarcha_token_refresh_needed', 'false', NOW())
+		ON CONFLICT (key) DO UPDATE SET value = 'false', updated_at = NOW()
+	`)
+	return nil
+}
+
+func (s *Service) NeedsTokenRefresh(ctx context.Context) (bool, error) {
+	var value string
+	err := s.db.QueryRowContext(ctx,
+		`SELECT value FROM syncer_state WHERE key = 'birdarcha_token_refresh_needed'`,
+	).Scan(&value)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return false, nil
+		}
+		return false, err
+	}
+	return value == "true", nil
 }
 
 func (s *Service) Delete(ctx context.Context, id uuid.UUID) error {

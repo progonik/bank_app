@@ -91,6 +91,19 @@ func (s *Syncer) runSync(ctx context.Context) {
 	}
 }
 
+func (s *Syncer) setTokenRefreshNeeded(ctx context.Context, needed bool) error {
+	val := "false"
+	if needed {
+		val = "true"
+	}
+	_, err := s.db.ExecContext(ctx, `
+		INSERT INTO syncer_state (key, value, updated_at)
+		VALUES ('birdarcha_token_refresh_needed', $1, NOW())
+		ON CONFLICT (key) DO UPDATE SET value = $1, updated_at = NOW()
+	`, val)
+	return err
+}
+
 func (s *Syncer) sync(ctx context.Context) error {
 	// Load token from DB before each sync
 	token, err := s.GetToken(ctx)
@@ -132,6 +145,10 @@ func (s *Syncer) sync(ctx context.Context) error {
 	for page := 0; !done; page++ {
 		list, err := s.client.FetchList(ctx, page, 20)
 		if err != nil {
+			if strings.Contains(err.Error(), "status 401") {
+				log.Println("birdarcha-syncer: token expired, signalling extension")
+				_ = s.setTokenRefreshNeeded(ctx, true)
+			}
 			return fmt.Errorf("failed to fetch list page %d: %w", page, err)
 		}
 

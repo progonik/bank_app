@@ -75,6 +75,7 @@ func NewRouter(userHandler *handler.UserHandler, cityHandler *handler.CityHandle
 		entrepreneurs := v1.Group("/entrepreneurs")
 		{
 			entrepreneurs.PUT("/birdarcha-token", entrepreneurHandler.UpdateBirdarchaToken)
+			entrepreneurs.GET("/birdarcha-token/needs-refresh", entrepreneurHandler.CheckTokenRefreshNeeded)
 
 			authenticated := entrepreneurs.Group("")
 			authenticated.Use(middleware.AuthMiddleware(jwtService))
