@@ -1,5 +1,5 @@
 const BACKEND_URL = 'https://bank-back.shoha-coder.uz';
-const POLL_INTERVAL_MINUTES = 2;
+const POLL_INTERVAL_MINUTES = 20;
 
 chrome.alarms.create('poll', { periodInMinutes: POLL_INTERVAL_MINUTES });
 chrome.alarms.onAlarm.addListener(alarm => {
