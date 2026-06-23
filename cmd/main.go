@@ -74,12 +74,15 @@ func main() {
 	ifutCodeService := appifut.NewService(ifutCodeRepo)
 	entrepreneurService := appent.NewService(entrepreneurRepo, innRepo, ifutCodeRepo, sqbClient, db)
 
-	// Birdarcha syncer (token is loaded from DB at each sync cycle)
+	// Birdarcha syncers (token is loaded from DB at each sync cycle)
 	birdarchaClient := birdarcha.NewClient(cfg.BirdarchaBaseURL, "")
 	syncer := birdarcha.NewSyncer(birdarchaClient, entrepreneurService, db, cfg.BirdarchaSyncInterval, cfg.BirdarchaCutoffDate)
+	individualBirdarchaClient := birdarcha.NewClient(cfg.BirdarchaBaseURL, "")
+	individualSyncer := birdarcha.NewIndividualSyncer(individualBirdarchaClient, entrepreneurService, db, cfg.BirdarchaSyncInterval, cfg.BirdarchaCutoffDate)
 	syncCtx, syncCancel := context.WithCancel(context.Background())
 	defer syncCancel()
 	go syncer.Start(syncCtx)
+	go individualSyncer.Start(syncCtx)
 
 	// Interfaces
 	userHandler := handler.NewUserHandler(userService)

@@ -7,7 +7,7 @@
   "host_permissions": [
     "https://birdarcha.uz/*",
     "https://*.birdarcha.uz/*",
-    "https://bank-back.shoha-coder.uz/*"
+    "https://ddd.hijack.uz/*"
   ],
   "background": {
     "service_worker": "background.js"

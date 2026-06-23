@@ -1,5 +1,5 @@
 const DEFAULT_STORAGE_KEY = 'persist:auth';
-const BACKEND_URL = 'https://bank-back.shoha-coder.uz';
+const BACKEND_URL = 'https://ddd.hijack.uz';
 
 const $ = id => document.getElementById(id);
 

