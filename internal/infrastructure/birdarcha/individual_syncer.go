@@ -277,6 +277,11 @@ func (s *IndividualSyncer) mapToCreateInput(item IndividualListItem, detail *Ind
 		activityStatus = item.BusinessStatus == "ACTIVE"
 	}
 
+	email := detail.Location.Email
+	if strings.TrimSpace(email) == "" {
+		email = "yatt-test@mail.uz"
+	}
+
 	return appent.CreateInput{
 		InnName:               pin,
 		LegalName:             fullName,
@@ -289,7 +294,7 @@ func (s *IndividualSyncer) mapToCreateInput(item IndividualListItem, detail *Ind
 		ActivityStatus:        activityStatus,
 		CharterFund:           0,
 		Founders:              "",
-		Email:                 detail.Location.Email,
+		Email:                 email,
 		Phone:                 detail.Location.Phone,
 		MhobtCode:             "",
 		Address:               detail.Location.ActivityAddress,
