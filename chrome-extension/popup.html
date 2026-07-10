@@ -64,6 +64,7 @@
     }
 
     .status-text { color: #495057; }
+    .status-text.error-text { color: #b42318; }
 
     button {
       width: 100%;
@@ -120,6 +121,23 @@
       overflow: hidden;
       margin-top: 6px;
     }
+
+    .error-detail {
+      display: none;
+      margin-top: 10px;
+      padding: 8px;
+      border: 1px solid #f1b4ad;
+      border-radius: 4px;
+      background: #fff5f5;
+      color: #842029;
+      font-family: monospace;
+      font-size: 11px;
+      line-height: 1.35;
+      white-space: pre-wrap;
+      word-break: break-word;
+      max-height: 160px;
+      overflow: auto;
+    }
   </style>
 </head>
 <body>
@@ -133,6 +151,7 @@
     </div>
     <button id="sync-btn">Sync Token</button>
     <div class="token-preview" id="token-preview" style="display:none;"></div>
+    <div class="error-detail" id="error-detail"></div>
   </div>
 
   <script src="popup.js"></script>

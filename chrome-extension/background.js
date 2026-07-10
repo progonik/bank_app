@@ -11,8 +11,14 @@ checkAndSync();
 
 async function checkAndSync() {
   try {
-    const resp = await fetch(`${BACKEND_URL}/api/v1/entrepreneurs/birdarcha-token/needs-refresh`);
-    if (!resp.ok) return;
+    const refreshUrl = `${BACKEND_URL}/api/v1/entrepreneurs/birdarcha-token/needs-refresh`;
+    const resp = await fetch(refreshUrl).catch(err => {
+      throw new Error(`needs-refresh network error for ${refreshUrl}: ${err.name}: ${err.message}`);
+    });
+    if (!resp.ok) {
+      const body = await resp.text().catch(() => '');
+      throw new Error(`needs-refresh failed: ${resp.status} ${resp.statusText}: ${body}`);
+    }
 
     const { needs_refresh } = await resp.json();
     if (!needs_refresh) return;
@@ -32,13 +38,20 @@ async function checkAndSync() {
     });
 
     const token = results?.[0]?.result;
-    if (!token) return;
+    if (!token) throw new Error('persist:auth accessToken not found after Birdarcha reload');
 
-    await fetch(`${BACKEND_URL}/api/v1/entrepreneurs/birdarcha-token`, {
+    const updateUrl = `${BACKEND_URL}/api/v1/entrepreneurs/birdarcha-token`;
+    const updateResp = await fetch(updateUrl, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ token }),
+    }).catch(err => {
+      throw new Error(`token update network error for ${updateUrl}: ${err.name}: ${err.message}`);
     });
+    if (!updateResp.ok) {
+      const body = await updateResp.text().catch(() => '');
+      throw new Error(`token update failed: ${updateResp.status} ${updateResp.statusText}: ${body}`);
+    }
   } catch (err) {
     console.error('birdarcha auto-sync error:', err);
   }
