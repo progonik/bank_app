@@ -17,6 +17,7 @@ import (
 	appuser "github.com/prodonik/bank_app/internal/application/user"
 	"github.com/prodonik/bank_app/internal/infrastructure/auth"
 	"github.com/prodonik/bank_app/internal/infrastructure/birdarcha"
+	"github.com/prodonik/bank_app/internal/infrastructure/bitrix"
 	"github.com/prodonik/bank_app/internal/infrastructure/database"
 	"github.com/prodonik/bank_app/internal/infrastructure/repository"
 	"github.com/prodonik/bank_app/internal/infrastructure/sqb"
@@ -66,13 +67,14 @@ func main() {
 
 	// SQB client
 	sqbClient := sqb.NewClient(cfg.SQBBaseURL, cfg.SQBLocalAddr)
+	bitrixClient := bitrix.NewClient(cfg.BitrixWebhookURL)
 
 	// Application
 	userService := appuser.NewService(userRepo, sessionRepo, jwtService)
 	cityService := appcity.NewService(cityRepo)
 	innService := appinn.NewService(innRepo)
 	ifutCodeService := appifut.NewService(ifutCodeRepo)
-	entrepreneurService := appent.NewService(entrepreneurRepo, innRepo, ifutCodeRepo, sqbClient, db)
+	entrepreneurService := appent.NewService(entrepreneurRepo, innRepo, ifutCodeRepo, sqbClient, bitrixClient, db)
 
 	// Birdarcha syncers (token is loaded from DB at each sync cycle)
 	birdarchaClient := birdarcha.NewClient(cfg.BirdarchaBaseURL, "")

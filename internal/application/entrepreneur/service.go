@@ -12,6 +12,7 @@ import (
 	domain "github.com/prodonik/bank_app/internal/domain/entrepreneur"
 	ifutdomain "github.com/prodonik/bank_app/internal/domain/ifut_code"
 	domainn "github.com/prodonik/bank_app/internal/domain/inn"
+	"github.com/prodonik/bank_app/internal/infrastructure/bitrix"
 	"github.com/prodonik/bank_app/internal/infrastructure/sqb"
 )
 
@@ -20,11 +21,12 @@ type Service struct {
 	innRepo      domainn.Repository
 	ifutCodeRepo ifutdomain.Repository
 	sqbClient    *sqb.Client
+	bitrixClient *bitrix.Client
 	db           *sql.DB
 }
 
-func NewService(repo domain.Repository, innRepo domainn.Repository, ifutCodeRepo ifutdomain.Repository, sqbClient *sqb.Client, db *sql.DB) *Service {
-	return &Service{repo: repo, innRepo: innRepo, ifutCodeRepo: ifutCodeRepo, sqbClient: sqbClient, db: db}
+func NewService(repo domain.Repository, innRepo domainn.Repository, ifutCodeRepo ifutdomain.Repository, sqbClient *sqb.Client, bitrixClient *bitrix.Client, db *sql.DB) *Service {
+	return &Service{repo: repo, innRepo: innRepo, ifutCodeRepo: ifutCodeRepo, sqbClient: sqbClient, bitrixClient: bitrixClient, db: db}
 }
 
 type CreateInput struct {
@@ -138,6 +140,15 @@ func (s *Service) Create(ctx context.Context, input CreateInput) (*domain.Entrep
 			created.SqbApiError = &errMsg
 		} else {
 			log.Printf("sqb: lead sent for entrepreneur %s — status: %s", created.ID, resp.Status)
+		}
+	}
+
+	if s.bitrixClient != nil && s.bitrixClient.Enabled() && strings.HasPrefix(created.RegistrationAuthority, "birdarcha") {
+		contactID, dealID, err := s.bitrixClient.CreateContactAndDeal(ctx, created)
+		if err != nil {
+			log.Printf("bitrix: failed to create contact/deal for entrepreneur %s: %v", created.ID, err)
+		} else {
+			log.Printf("bitrix: created contact=%d deal=%d for entrepreneur %s", contactID, dealID, created.ID)
 		}
 	}
 

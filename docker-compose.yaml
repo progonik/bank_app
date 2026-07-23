@@ -16,6 +16,7 @@ services:
       SERVER_PORT: ${SERVER_PORT:-8080}
       ACCESS_TOKEN_EXPIRY: ${ACCESS_TOKEN_EXPIRY:-15m}
       REFRESH_TOKEN_EXPIRY: ${REFRESH_TOKEN_EXPIRY:-168h}
+      BITRIX_WEBHOOK_URL: ${BITRIX_WEBHOOK_URL}
       GIN_MODE: release
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://localhost:8080/health"]

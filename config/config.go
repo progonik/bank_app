@@ -24,6 +24,8 @@ type Config struct {
 	SQBBaseURL   string
 	SQBLocalAddr string
 
+	BitrixWebhookURL string
+
 	BirdarchaBaseURL      string
 	BirdarchaSyncInterval time.Duration
 	BirdarchaCutoffDate   string
@@ -70,6 +72,7 @@ func Load() (*Config, error) {
 		RefreshTokenExpiry: refreshExpiry,
 		SQBBaseURL:         getEnv("SQB_BASE_URL", "https://ocrm.sqb.uz/backend/leads"),
 		SQBLocalAddr:       getEnv("SQB_LOCAL_ADDR", "46.8.176.85"),
+		BitrixWebhookURL:   getEnv("BITRIX_WEBHOOK_URL", ""),
 
 		BirdarchaBaseURL:      getEnv("BIRDARCHA_BASE_URL", "https://api.birdarcha.uz"),
 		BirdarchaSyncInterval: birdarchaInterval,
