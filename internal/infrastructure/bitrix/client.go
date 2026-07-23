@@ -112,7 +112,7 @@ func (c *Client) call(ctx context.Context, method string, payload any) (int, err
 
 func (c *Client) todayDeadline() string {
 	now := time.Now().In(c.location)
-	deadline := time.Date(now.Year(), now.Month(), now.Day(), 18, 0, 0, 0, c.location)
+	deadline := time.Date(now.Year(), now.Month(), now.Day(), 23, 59, 0, 0, c.location)
 	return deadline.Format(time.RFC3339)
 }
 
