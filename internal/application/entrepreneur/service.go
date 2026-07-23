@@ -144,11 +144,11 @@ func (s *Service) Create(ctx context.Context, input CreateInput) (*domain.Entrep
 	}
 
 	if s.bitrixClient != nil && s.bitrixClient.Enabled() && strings.HasPrefix(created.RegistrationAuthority, "birdarcha") {
-		taskID, err := s.bitrixClient.CreateTask(ctx, created)
+		leadID, err := s.bitrixClient.CreateLead(ctx, created)
 		if err != nil {
-			log.Printf("bitrix: failed to create task for entrepreneur %s: %v", created.ID, err)
+			log.Printf("bitrix: failed to create lead for entrepreneur %s: %v", created.ID, err)
 		} else {
-			log.Printf("bitrix: created task=%d for entrepreneur %s", taskID, created.ID)
+			log.Printf("bitrix: created lead=%d for entrepreneur %s", leadID, created.ID)
 		}
 	}
 

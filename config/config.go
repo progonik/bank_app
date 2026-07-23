@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -72,7 +73,7 @@ func Load() (*Config, error) {
 		RefreshTokenExpiry: refreshExpiry,
 		SQBBaseURL:         getEnv("SQB_BASE_URL", "https://ocrm.sqb.uz/backend/leads"),
 		SQBLocalAddr:       getEnv("SQB_LOCAL_ADDR", "46.8.176.85"),
-		BitrixWebhookURL:   getEnv("BITRIX_WEBHOOK_URL", "https://onlineoffice.bitrix24.ru/rest/1157/ugtuc90cprq7qx0i/"),
+		BitrixWebhookURL:   getNonEmptyEnv("BITRIX_WEBHOOK_URL", "https://onlineoffice.bitrix24.ru/rest/1157/y9vddthz1iltqys0/"),
 
 		BirdarchaBaseURL:      getEnv("BIRDARCHA_BASE_URL", "https://api.birdarcha.uz"),
 		BirdarchaSyncInterval: birdarchaInterval,
@@ -88,6 +89,13 @@ func Load() (*Config, error) {
 
 func getEnv(key, fallback string) string {
 	if val, ok := os.LookupEnv(key); ok {
+		return val
+	}
+	return fallback
+}
+
+func getNonEmptyEnv(key, fallback string) string {
+	if val := strings.TrimSpace(os.Getenv(key)); val != "" {
 		return val
 	}
 	return fallback
