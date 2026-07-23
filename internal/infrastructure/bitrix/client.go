@@ -26,6 +26,10 @@ type response struct {
 	ErrorDescription string `json:"error_description"`
 }
 
+const bitrixResponsibleUserID = 31
+
+var bitrixAuditorUserIDs = []int{1, 19, 75, 1157}
+
 func NewClient(webhookURL string) *Client {
 	webhookURL = strings.TrimSpace(webhookURL)
 	if webhookURL != "" && !strings.HasSuffix(webhookURL, "/") {
@@ -58,7 +62,8 @@ func (c *Client) CreateTask(ctx context.Context, e *domain.Entrepreneur) (int, e
 			"TITLE":          e.LegalName,
 			"DESCRIPTION":    description(e),
 			"DEADLINE":       c.todayDeadline(),
-			"RESPONSIBLE_ID": 1157,
+			"RESPONSIBLE_ID": bitrixResponsibleUserID,
+			"AUDITORS":       bitrixAuditorUserIDs,
 		},
 	}
 
