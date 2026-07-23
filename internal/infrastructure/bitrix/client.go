@@ -75,7 +75,7 @@ func (c *Client) CreateTask(ctx context.Context, e *domain.Entrepreneur) (int, e
 
 	payload := map[string]any{
 		"TASKDATA": map[string]any{
-			"TITLE":          e.LegalName,
+			"TITLE":          taskTitle(e),
 			"DESCRIPTION":    description(e),
 			"DEADLINE":       c.todayDeadline(),
 			"RESPONSIBLE_ID": bitrixResponsibleUserID,
@@ -218,10 +218,10 @@ func (c *Client) todayDeadline() string {
 func description(e *domain.Entrepreneur) string {
 	lines := []string{
 		"INN/PIN: " + e.InnName,
-		"Name: " + e.LegalName,
+		"Name: " + taskTitle(e),
 		"Registration date: " + e.RegistrationDate,
 		"Registration number: " + e.RegistrationNumber,
-		"Legal form: " + e.LegalForm,
+		"Legal form: " + legalFormDisplay(e.LegalForm),
 		"OKED / IFUT: " + e.IfutCodeName,
 		"Activity status: " + activityStatus(e.ActivityStatus),
 		"Charter fund: " + fmt.Sprintf("%d", e.CharterFund),
@@ -233,6 +233,48 @@ func description(e *domain.Entrepreneur) string {
 		"Director / chief: " + e.DirectorName,
 	}
 	return strings.Join(lines, "\n")
+}
+
+func taskTitle(e *domain.Entrepreneur) string {
+	form := legalFormName(e.LegalForm)
+	name := strings.TrimSpace(e.LegalName)
+	if form == "" || name == "" || hasLegalFormPrefix(name) {
+		return name
+	}
+	return form + " " + name
+}
+
+func legalFormDisplay(id string) string {
+	name := legalFormName(id)
+	if name == "" {
+		return id
+	}
+	return name + " (" + id + ")"
+}
+
+func legalFormName(id string) string {
+	switch strings.TrimSpace(id) {
+	case "110":
+		return "XK"
+	case "120":
+		return "OK"
+	case "130":
+		return "FX"
+	case "1521":
+		return "MCHJ"
+	default:
+		return ""
+	}
+}
+
+func hasLegalFormPrefix(name string) bool {
+	upper := strings.ToUpper(strings.TrimSpace(name))
+	for _, prefix := range []string{"MCHJ ", "XK ", "OK ", "FX "} {
+		if strings.HasPrefix(upper, prefix) {
+			return true
+		}
+	}
+	return false
 }
 
 func activityStatus(active bool) string {
