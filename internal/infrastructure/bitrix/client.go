@@ -17,6 +17,7 @@ import (
 type Client struct {
 	webhookURL string
 	httpClient *http.Client
+	location   *time.Location
 }
 
 type response struct {
@@ -30,9 +31,16 @@ func NewClient(webhookURL string) *Client {
 	if webhookURL != "" && !strings.HasSuffix(webhookURL, "/") {
 		webhookURL += "/"
 	}
+
+	location, err := time.LoadLocation("Asia/Tashkent")
+	if err != nil {
+		location = time.FixedZone("Asia/Tashkent", 5*60*60)
+	}
+
 	return &Client{
 		webhookURL: webhookURL,
 		httpClient: &http.Client{Timeout: 15 * time.Second},
+		location:   location,
 	}
 }
 
@@ -40,55 +48,23 @@ func (c *Client) Enabled() bool {
 	return c != nil && c.webhookURL != ""
 }
 
-func (c *Client) CreateContactAndDeal(ctx context.Context, e *domain.Entrepreneur) (contactID, dealID int, err error) {
+func (c *Client) CreateTask(ctx context.Context, e *domain.Entrepreneur) (int, error) {
 	if !c.Enabled() {
-		return 0, 0, nil
+		return 0, nil
 	}
 
-	contactID, err = c.CreateContact(ctx, e)
+	payload := map[string]any{
+		"TASKDATA": map[string]any{
+			"TITLE":          e.LegalName,
+			"DESCRIPTION":    description(e),
+			"DEADLINE":       c.todayDeadline(),
+			"RESPONSIBLE_ID": 1157,
+		},
+	}
+
+	id, err := c.call(ctx, "task.item.add.json", payload)
 	if err != nil {
-		return 0, 0, err
-	}
-
-	dealID, err = c.CreateDeal(ctx, e, contactID)
-	if err != nil {
-		return contactID, 0, err
-	}
-
-	return contactID, dealID, nil
-}
-
-func (c *Client) CreateContact(ctx context.Context, e *domain.Entrepreneur) (int, error) {
-	fields := map[string]any{
-		"NAME":     e.LegalName,
-		"COMMENTS": comments(e),
-	}
-	if e.Phone != "" {
-		fields["PHONE"] = []map[string]string{{"VALUE": e.Phone, "VALUE_TYPE": "WORK"}}
-	}
-	if e.Email != "" {
-		fields["EMAIL"] = []map[string]string{{"VALUE": e.Email, "VALUE_TYPE": "WORK"}}
-	}
-
-	id, err := c.call(ctx, "crm.contact.add.json", map[string]any{"fields": fields})
-	if err != nil {
-		return 0, fmt.Errorf("bitrix: create contact failed: %w", err)
-	}
-	return id, nil
-}
-
-func (c *Client) CreateDeal(ctx context.Context, e *domain.Entrepreneur, contactID int) (int, error) {
-	fields := map[string]any{
-		"TITLE":    e.LegalName,
-		"COMMENTS": comments(e),
-	}
-	if contactID > 0 {
-		fields["CONTACT_ID"] = contactID
-	}
-
-	id, err := c.call(ctx, "crm.deal.add.json", map[string]any{"fields": fields})
-	if err != nil {
-		return 0, fmt.Errorf("bitrix: create deal failed: %w", err)
+		return 0, fmt.Errorf("bitrix: create task failed: %w", err)
 	}
 	return id, nil
 }
@@ -134,18 +110,35 @@ func (c *Client) call(ctx context.Context, method string, payload any) (int, err
 	return result.Result, nil
 }
 
-func comments(e *domain.Entrepreneur) string {
+func (c *Client) todayDeadline() string {
+	now := time.Now().In(c.location)
+	deadline := time.Date(now.Year(), now.Month(), now.Day(), 18, 0, 0, 0, c.location)
+	return deadline.Format(time.RFC3339)
+}
+
+func description(e *domain.Entrepreneur) string {
 	lines := []string{
-		"Source: Birdarcha",
 		"INN/PIN: " + e.InnName,
+		"Name: " + e.LegalName,
 		"Registration date: " + e.RegistrationDate,
 		"Registration number: " + e.RegistrationNumber,
-		"Org form: " + e.LegalForm,
-		"OKED: " + e.IfutCodeName,
-		"Phone: " + e.Phone,
+		"Legal form: " + e.LegalForm,
+		"OKED / IFUT: " + e.IfutCodeName,
+		"Activity status: " + activityStatus(e.ActivityStatus),
+		"Charter fund: " + fmt.Sprintf("%d", e.CharterFund),
+		"Founders: " + e.Founders,
 		"Email: " + e.Email,
+		"Phone: " + e.Phone,
+		"MHOBT code: " + e.MhobtCode,
 		"Address: " + e.Address,
-		"Director/chief: " + e.DirectorName,
+		"Director / chief: " + e.DirectorName,
 	}
 	return strings.Join(lines, "\n")
+}
+
+func activityStatus(active bool) string {
+	if active {
+		return "active"
+	}
+	return "inactive"
 }

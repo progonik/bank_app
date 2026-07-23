@@ -12,6 +12,8 @@ import (
 	appent "github.com/prodonik/bank_app/internal/application/entrepreneur"
 )
 
+const tashkentCityRegionID = 1726
+
 // Syncer periodically fetches new legal entities from Birdarcha and creates
 // them via the entrepreneur service (which also sends to SQB).
 type Syncer struct {
@@ -191,6 +193,15 @@ func (s *Syncer) sync(ctx context.Context) error {
 
 	for i := len(newItems) - 1; i >= 0; i-- {
 		item := newItems[i]
+
+		if item.ActivityRegion.ID != tashkentCityRegionID {
+			log.Printf("birdarcha-syncer: skipped non-Tashkent-city tin=%d name=%s region_id=%d region=%s", item.TIN, item.Name, item.ActivityRegion.ID, item.ActivityRegion.Name)
+			skipped++
+			if !hitFailure {
+				lastSuccessID = item.ID
+			}
+			continue
+		}
 
 		// Fetch full details
 		detail, err := s.client.FetchDetail(ctx, item.ID)

@@ -20,6 +20,14 @@ type ListItem struct {
 		ID   int    `json:"id"`
 		Name string `json:"name"`
 	} `json:"business_type"`
+	ActivityRegion struct {
+		ID   int    `json:"id"`
+		Name string `json:"name"`
+	} `json:"activity_region"`
+	ActivitySubRegion struct {
+		ID   int    `json:"id"`
+		Name string `json:"name"`
+	} `json:"activity_sub_region"`
 	BusinessStatus struct {
 		ID   int    `json:"id"`
 		Name string `json:"name"`
