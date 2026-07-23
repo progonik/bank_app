@@ -140,40 +140,8 @@ func (s *IndividualSyncer) sync(ctx context.Context) error {
 	for i := len(newItems) - 1; i >= 0; i-- {
 		item := newItems[i]
 
-		if item.ActivityRegion.ID != tashkentCityRegionID {
-			log.Printf("birdarcha-individual-syncer: skipped non-Tashkent-city pin=%s name=%s region_id=%d region=%s", item.PIN, item.FullName, item.ActivityRegion.ID, item.ActivityRegion.Name)
-			skipped++
-			if !hitFailure {
-				lastSuccessID = item.ID
-			}
-			continue
-		}
-
-		detail, err := s.client.FetchIndividualDetail(ctx, item.ID)
-		if err != nil {
-			log.Printf("birdarcha-individual-syncer: failed to fetch detail for id=%d pin=%s: %v", item.ID, item.PIN, err)
-			failed++
-			hitFailure = true
-			continue
-		}
-
-		input := s.mapToCreateInput(item, detail)
-
-		_, err = s.entrepreneurService.Create(ctx, input)
-		if err != nil {
-			if strings.Contains(err.Error(), "duplicate") || strings.Contains(err.Error(), "already exists") {
-				log.Printf("birdarcha-individual-syncer: skipped duplicate pin=%s name=%s", item.PIN, item.FullName)
-				skipped++
-			} else {
-				log.Printf("birdarcha-individual-syncer: failed to create pin=%s name=%s: %v", item.PIN, item.FullName, err)
-				failed++
-				hitFailure = true
-				continue
-			}
-		} else {
-			created++
-		}
-
+		log.Printf("birdarcha-individual-syncer: skipped YaTT pin=%s name=%s region_id=%d region=%s", item.PIN, item.FullName, item.ActivityRegion.ID, item.ActivityRegion.Name)
+		skipped++
 		if !hitFailure {
 			lastSuccessID = item.ID
 		}
