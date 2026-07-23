@@ -98,11 +98,16 @@ func (c *Client) call(ctx context.Context, method string, payload any) (int, err
 
 func leadFields(e *domain.Entrepreneur) map[string]any {
 	fields := map[string]any{
-		"TITLE":          taskTitle(e),
-		"COMPANY_TITLE":  taskTitle(e),
-		"STATUS_ID":      "NEW",
-		"ASSIGNED_BY_ID": bitrixResponsibleUserID,
-		"COMMENTS":       description(e),
+		"TITLE":                taskTitle(e),
+		"COMPANY_TITLE":        taskTitle(e),
+		"NAME":                 e.DirectorName,
+		"STATUS_ID":            "NEW",
+		"ASSIGNED_BY_ID":       bitrixResponsibleUserID,
+		"ADDRESS":              e.Address,
+		"COMMENTS":             description(e),
+		"UF_CRM_1638948461838": e.InnName,
+		"UF_CRM_UZB_INN_LEAD":  e.InnName,
+		"UF_CRM_1638948478586": e.IfutCodeName,
 	}
 	if e.Phone != "" {
 		fields["PHONE"] = []map[string]string{{"VALUE": e.Phone, "VALUE_TYPE": "WORK"}}
