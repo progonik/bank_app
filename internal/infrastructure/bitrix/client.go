@@ -31,6 +31,7 @@ type userListResponse struct {
 	Result           []user `json:"result"`
 	Error            string `json:"error"`
 	ErrorDescription string `json:"error_description"`
+	Next             *int   `json:"next"`
 }
 
 type user struct {
@@ -110,7 +111,33 @@ func (c *Client) fetchAuditorUserIDs(ctx context.Context) ([]int, error) {
 }
 
 func (c *Client) fetchActiveUsers(ctx context.Context) ([]user, error) {
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.webhookURL+"user.get.json", nil)
+	var activeUsers []user
+	start := 0
+
+	for {
+		result, err := c.fetchUsersPage(ctx, start)
+		if err != nil {
+			return nil, err
+		}
+
+		for _, u := range result.Result {
+			if u.Active {
+				activeUsers = append(activeUsers, u)
+			}
+		}
+
+		if result.Next == nil {
+			break
+		}
+		start = *result.Next
+	}
+
+	return activeUsers, nil
+}
+
+func (c *Client) fetchUsersPage(ctx context.Context, start int) (*userListResponse, error) {
+	url := fmt.Sprintf("%suser.get.json?start=%d", c.webhookURL, start)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return nil, fmt.Errorf("create request: %w", err)
 	}
@@ -138,14 +165,7 @@ func (c *Client) fetchActiveUsers(ctx context.Context) ([]user, error) {
 		return nil, fmt.Errorf("%s - %s", result.Error, result.ErrorDescription)
 	}
 
-	activeUsers := make([]user, 0, len(result.Result))
-	for _, u := range result.Result {
-		if u.Active {
-			activeUsers = append(activeUsers, u)
-		}
-	}
-
-	return activeUsers, nil
+	return &result, nil
 }
 
 func (c *Client) call(ctx context.Context, method string, payload any) (int, error) {
