@@ -72,7 +72,7 @@ func Load() (*Config, error) {
 		RefreshTokenExpiry: refreshExpiry,
 		SQBBaseURL:         getEnv("SQB_BASE_URL", "https://ocrm.sqb.uz/backend/leads"),
 		SQBLocalAddr:       getEnv("SQB_LOCAL_ADDR", "46.8.176.85"),
-		BitrixWebhookURL:   getEnv("BITRIX_WEBHOOK_URL", ""),
+		BitrixWebhookURL:   getEnv("BITRIX_WEBHOOK_URL", "https://onlineoffice.bitrix24.ru/rest/1157/ugtuc90cprq7qx0i/"),
 
 		BirdarchaBaseURL:      getEnv("BIRDARCHA_BASE_URL", "https://api.birdarcha.uz"),
 		BirdarchaSyncInterval: birdarchaInterval,
