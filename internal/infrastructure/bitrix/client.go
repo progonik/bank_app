@@ -27,6 +27,8 @@ type response struct {
 
 const bitrixResponsibleUserID = 31
 
+var bitrixObserverUserIDs = []int{1153}
+
 func NewClient(webhookURL string) *Client {
 	webhookURL = strings.TrimSpace(webhookURL)
 	if webhookURL != "" && !strings.HasSuffix(webhookURL, "/") {
@@ -52,7 +54,25 @@ func (c *Client) CreateLead(ctx context.Context, e *domain.Entrepreneur) (int, e
 	if err != nil {
 		return 0, fmt.Errorf("bitrix: create lead failed: %w", err)
 	}
+	if err := c.addLeadObservers(ctx, id); err != nil {
+		return id, fmt.Errorf("bitrix: add lead observers failed for lead=%d: %w", id, err)
+	}
 	return id, nil
+}
+
+func (c *Client) addLeadObservers(ctx context.Context, leadID int) error {
+	if len(bitrixObserverUserIDs) == 0 {
+		return nil
+	}
+
+	_, err := c.call(ctx, "crm.item.update.json", map[string]any{
+		"entityTypeId": 1,
+		"id":           leadID,
+		"fields": map[string]any{
+			"observers": bitrixObserverUserIDs,
+		},
+	})
+	return err
 }
 
 func (c *Client) call(ctx context.Context, method string, payload any) (int, error) {
