@@ -14,6 +14,7 @@ import (
 	appent "github.com/prodonik/bank_app/internal/application/entrepreneur"
 	appifut "github.com/prodonik/bank_app/internal/application/ifut_code"
 	appinn "github.com/prodonik/bank_app/internal/application/inn"
+	appintegration "github.com/prodonik/bank_app/internal/application/integration"
 	appuser "github.com/prodonik/bank_app/internal/application/user"
 	"github.com/prodonik/bank_app/internal/infrastructure/auth"
 	"github.com/prodonik/bank_app/internal/infrastructure/birdarcha"
@@ -64,6 +65,7 @@ func main() {
 	innRepo := repository.NewInnRepository(db)
 	ifutCodeRepo := repository.NewIfutCodeRepository(db)
 	entrepreneurRepo := repository.NewEntrepreneurRepository(db)
+	integrationRepo := repository.NewIntegrationRepository(db)
 
 	// SQB client
 	sqbClient := sqb.NewClient(cfg.SQBBaseURL, cfg.SQBLocalAddr)
@@ -74,7 +76,8 @@ func main() {
 	cityService := appcity.NewService(cityRepo)
 	innService := appinn.NewService(innRepo)
 	ifutCodeService := appifut.NewService(ifutCodeRepo)
-	entrepreneurService := appent.NewService(entrepreneurRepo, innRepo, ifutCodeRepo, sqbClient, bitrixClient, db)
+	integrationService := appintegration.NewService(integrationRepo)
+	entrepreneurService := appent.NewService(entrepreneurRepo, innRepo, ifutCodeRepo, sqbClient, bitrixClient, integrationService, db)
 
 	// Birdarcha syncers (token is loaded from DB at each sync cycle)
 	birdarchaClient := birdarcha.NewClient(cfg.BirdarchaBaseURL, "")
@@ -92,7 +95,8 @@ func main() {
 	innHandler := handler.NewInnHandler(innService)
 	ifutCodeHandler := handler.NewIfutCodeHandler(ifutCodeService)
 	entrepreneurHandler := handler.NewEntrepreneurHandler(entrepreneurService)
-	router := api.NewRouter(userHandler, cityHandler, innHandler, ifutCodeHandler, entrepreneurHandler, jwtService)
+	integrationHandler := handler.NewIntegrationHandler(integrationService)
+	router := api.NewRouter(userHandler, cityHandler, innHandler, ifutCodeHandler, entrepreneurHandler, integrationHandler, jwtService)
 
 	log.Printf("Starting server on port %s", cfg.ServerPort)
 	if err := router.Run(":" + cfg.ServerPort); err != nil {

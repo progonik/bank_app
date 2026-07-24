@@ -9,6 +9,7 @@ import (
 
 	"github.com/google/uuid"
 
+	appintegration "github.com/prodonik/bank_app/internal/application/integration"
 	domain "github.com/prodonik/bank_app/internal/domain/entrepreneur"
 	ifutdomain "github.com/prodonik/bank_app/internal/domain/ifut_code"
 	domainn "github.com/prodonik/bank_app/internal/domain/inn"
@@ -22,11 +23,12 @@ type Service struct {
 	ifutCodeRepo ifutdomain.Repository
 	sqbClient    *sqb.Client
 	bitrixClient *bitrix.Client
+	integrations *appintegration.Service
 	db           *sql.DB
 }
 
-func NewService(repo domain.Repository, innRepo domainn.Repository, ifutCodeRepo ifutdomain.Repository, sqbClient *sqb.Client, bitrixClient *bitrix.Client, db *sql.DB) *Service {
-	return &Service{repo: repo, innRepo: innRepo, ifutCodeRepo: ifutCodeRepo, sqbClient: sqbClient, bitrixClient: bitrixClient, db: db}
+func NewService(repo domain.Repository, innRepo domainn.Repository, ifutCodeRepo ifutdomain.Repository, sqbClient *sqb.Client, bitrixClient *bitrix.Client, integrations *appintegration.Service, db *sql.DB) *Service {
+	return &Service{repo: repo, innRepo: innRepo, ifutCodeRepo: ifutCodeRepo, sqbClient: sqbClient, bitrixClient: bitrixClient, integrations: integrations, db: db}
 }
 
 type CreateInput struct {
@@ -126,7 +128,7 @@ func (s *Service) Create(ctx context.Context, input CreateInput) (*domain.Entrep
 		return nil, err
 	}
 
-	if s.sqbClient != nil {
+	if s.sqbClient != nil && s.integrationUsable(ctx, "sqb") {
 		resp, err := s.sqbClient.SendLead(ctx, created)
 		if err != nil {
 			errMsg := err.Error()
@@ -143,7 +145,7 @@ func (s *Service) Create(ctx context.Context, input CreateInput) (*domain.Entrep
 		}
 	}
 
-	if s.bitrixClient != nil && s.bitrixClient.Enabled() && strings.HasPrefix(created.RegistrationAuthority, "birdarcha") {
+	if s.bitrixClient != nil && s.bitrixClient.Enabled() && strings.HasPrefix(created.RegistrationAuthority, "birdarcha") && s.integrationUsable(ctx, "bitrix") {
 		leadID, err := s.bitrixClient.CreateLead(ctx, created)
 		if err != nil {
 			log.Printf("bitrix: failed to create lead for entrepreneur %s: %v", created.ID, err)
@@ -153,6 +155,21 @@ func (s *Service) Create(ctx context.Context, input CreateInput) (*domain.Entrep
 	}
 
 	return created, nil
+}
+
+func (s *Service) integrationUsable(ctx context.Context, code string) bool {
+	if s.integrations == nil {
+		return true
+	}
+	usable, err := s.integrations.IsUsable(ctx, code)
+	if err != nil {
+		log.Printf("integration: failed to check %s state: %v", code, err)
+		return false
+	}
+	if !usable {
+		log.Printf("integration: %s is inactive or expired, skipping outbound call", code)
+	}
+	return usable
 }
 
 func (s *Service) GetByID(ctx context.Context, id uuid.UUID) (*domain.Entrepreneur, error) {
@@ -263,6 +280,11 @@ func (s *Service) RetrySqbFailed(ctx context.Context) (sent, failed int) {
 	}
 
 	log.Printf("sqb-retry: retrying %d records...", len(entrepreneurs))
+
+	if !s.integrationUsable(ctx, "sqb") {
+		log.Println("sqb-retry: sqb integration is inactive or expired")
+		return 0, 0
+	}
 
 	for _, e := range entrepreneurs {
 		if s.sqbClient == nil {
