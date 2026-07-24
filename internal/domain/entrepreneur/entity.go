@@ -26,6 +26,8 @@ type Entrepreneur struct {
 	Phone                 string
 	MhobtCode             string
 	Address               string
+	ActivityRegionID      int32
+	ActivityRegion        string
 	ActivitySubRegion     string
 	DirectorName          string
 	SqbApiError           *string

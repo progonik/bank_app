@@ -42,6 +42,8 @@ func (r *EntrepreneurRepository) Create(ctx context.Context, e *domain.Entrepren
 		Phone:                 e.Phone,
 		MhobtCode:             e.MhobtCode,
 		Address:               e.Address,
+		ActivityRegionID:      e.ActivityRegionID,
+		ActivityRegion:        e.ActivityRegion,
 		ActivitySubRegion:     e.ActivitySubRegion,
 		DirectorName:          e.DirectorName,
 		SqbApiError:           toNullString(e.SqbApiError),
@@ -81,6 +83,8 @@ func (r *EntrepreneurRepository) Update(ctx context.Context, e *domain.Entrepren
 		Phone:                 e.Phone,
 		MhobtCode:             e.MhobtCode,
 		Address:               e.Address,
+		ActivityRegionID:      e.ActivityRegionID,
+		ActivityRegion:        e.ActivityRegion,
 		ActivitySubRegion:     e.ActivitySubRegion,
 		DirectorName:          e.DirectorName,
 	})
@@ -114,7 +118,7 @@ func (r *EntrepreneurRepository) GetAllWithSqbError(ctx context.Context, limit, 
 	dataQuery := `SELECT e.id, e.inn_id, i.name, e.legal_name, e.registration_authority,
 		e.registration_date, e.registration_number, e.legal_form, e.ifut_code_id,
 		ic.name, e.activity_type, e.dbibt_code, e.activity_status, e.charter_fund, e.founders, e.email,
-		e.phone, e.mhobt_code, e.address, e.activity_sub_region, e.director_name, e.sqb_api_error, e.created_at
+		e.phone, e.mhobt_code, e.address, e.activity_region_id, e.activity_region, e.activity_sub_region, e.director_name, e.sqb_api_error, e.created_at
 	FROM entrepreneurs e
 	JOIN inns i ON e.inn_id = i.id
 	LEFT JOIN ifut_codes ic ON e.ifut_code_id = ic.id
@@ -137,7 +141,7 @@ func (r *EntrepreneurRepository) GetAllWithSqbError(ctx context.Context, limit, 
 			&e.ID, &e.InnID, &e.InnName, &e.LegalName, &e.RegistrationAuthority,
 			&e.RegistrationDate, &e.RegistrationNumber, &e.LegalForm, &ifutCodeID,
 			&ifutCodeName, &e.ActivityType, &e.DbibtCode, &e.ActivityStatus, &e.CharterFund, &e.Founders,
-			&e.Email, &e.Phone, &e.MhobtCode, &e.Address, &e.ActivitySubRegion, &e.DirectorName, &sqbApiError, &e.CreatedAt,
+			&e.Email, &e.Phone, &e.MhobtCode, &e.Address, &e.ActivityRegionID, &e.ActivityRegion, &e.ActivitySubRegion, &e.DirectorName, &sqbApiError, &e.CreatedAt,
 		); err != nil {
 			return nil, 0, fmt.Errorf("failed to scan entrepreneur: %w", err)
 		}
@@ -216,7 +220,7 @@ func (r *EntrepreneurRepository) GetAll(ctx context.Context, filter domain.Entre
 		`SELECT e.id, e.inn_id, i.name, e.legal_name, e.registration_authority,
 			e.registration_date, e.registration_number, e.legal_form, e.ifut_code_id,
 			ic.name, e.activity_type, e.dbibt_code, e.activity_status, e.charter_fund, e.founders, e.email,
-			e.phone, e.mhobt_code, e.address, e.activity_sub_region, e.director_name, e.sqb_api_error, e.created_at
+			e.phone, e.mhobt_code, e.address, e.activity_region_id, e.activity_region, e.activity_sub_region, e.director_name, e.sqb_api_error, e.created_at
 		FROM entrepreneurs e
 		JOIN inns i ON e.inn_id = i.id
 		LEFT JOIN ifut_codes ic ON e.ifut_code_id = ic.id%s
@@ -241,7 +245,7 @@ func (r *EntrepreneurRepository) GetAll(ctx context.Context, filter domain.Entre
 			&e.ID, &e.InnID, &e.InnName, &e.LegalName, &e.RegistrationAuthority,
 			&e.RegistrationDate, &e.RegistrationNumber, &e.LegalForm, &ifutCodeID,
 			&ifutCodeName, &e.ActivityType, &e.DbibtCode, &e.ActivityStatus, &e.CharterFund, &e.Founders,
-			&e.Email, &e.Phone, &e.MhobtCode, &e.Address, &e.ActivitySubRegion, &e.DirectorName, &sqbApiError, &e.CreatedAt,
+			&e.Email, &e.Phone, &e.MhobtCode, &e.Address, &e.ActivityRegionID, &e.ActivityRegion, &e.ActivitySubRegion, &e.DirectorName, &sqbApiError, &e.CreatedAt,
 		); err != nil {
 			return nil, 0, fmt.Errorf("failed to scan entrepreneur: %w", err)
 		}
@@ -312,6 +316,8 @@ func mapCreateRow(e sqlc.CreateEntrepreneurRow, innName, ifutCodeName string) *d
 		Phone:                 e.Phone,
 		MhobtCode:             e.MhobtCode,
 		Address:               e.Address,
+		ActivityRegionID:      e.ActivityRegionID,
+		ActivityRegion:        e.ActivityRegion,
 		ActivitySubRegion:     e.ActivitySubRegion,
 		DirectorName:          e.DirectorName,
 		SqbApiError:           fromNullString(e.SqbApiError),
@@ -344,6 +350,8 @@ func mapGetByIDRow(e sqlc.GetEntrepreneurByIDRow) *domain.Entrepreneur {
 		Phone:                 e.Phone,
 		MhobtCode:             e.MhobtCode,
 		Address:               e.Address,
+		ActivityRegionID:      e.ActivityRegionID,
+		ActivityRegion:        e.ActivityRegion,
 		ActivitySubRegion:     e.ActivitySubRegion,
 		DirectorName:          e.DirectorName,
 		SqbApiError:           fromNullString(e.SqbApiError),
@@ -372,6 +380,8 @@ func mapUpdateRow(e sqlc.UpdateEntrepreneurRow, innName, ifutCodeName string) *d
 		Phone:                 e.Phone,
 		MhobtCode:             e.MhobtCode,
 		Address:               e.Address,
+		ActivityRegionID:      e.ActivityRegionID,
+		ActivityRegion:        e.ActivityRegion,
 		ActivitySubRegion:     e.ActivitySubRegion,
 		DirectorName:          e.DirectorName,
 		SqbApiError:           fromNullString(e.SqbApiError),

@@ -25,6 +25,8 @@ type CreateEntrepreneurRequest struct {
 	Phone                 string `json:"phone" binding:"required,min=9,max=32"`
 	MhobtCode             string `json:"mhobt_code"`
 	Address               string `json:"address"`
+	ActivityRegionID      int32  `json:"activity_region_id"`
+	ActivityRegion        string `json:"activity_region"`
 	ActivitySubRegion     string `json:"activity_sub_region"`
 	DirectorName          string `json:"director_name"`
 }
@@ -45,6 +47,8 @@ type UpdateEntrepreneurRequest struct {
 	Phone                 *string `json:"phone"`
 	MhobtCode             *string `json:"mhobt_code"`
 	Address               *string `json:"address"`
+	ActivityRegionID      *int32  `json:"activity_region_id"`
+	ActivityRegion        *string `json:"activity_region"`
 	ActivitySubRegion     *string `json:"activity_sub_region"`
 	DirectorName          *string `json:"director_name"`
 }
@@ -69,6 +73,8 @@ type EntrepreneurResponse struct {
 	Phone                 string     `json:"phone"`
 	MhobtCode             string     `json:"mhobt_code"`
 	Address               string     `json:"address"`
+	ActivityRegionID      int32      `json:"activity_region_id"`
+	ActivityRegion        string     `json:"activity_region"`
 	ActivitySubRegion     string     `json:"activity_sub_region"`
 	DirectorName          string     `json:"director_name"`
 	SqbApiError           *string    `json:"sqb_api_error"`
@@ -107,6 +113,8 @@ func NewEntrepreneurResponse(e *domain.Entrepreneur) EntrepreneurResponse {
 		Phone:                 e.Phone,
 		MhobtCode:             e.MhobtCode,
 		Address:               e.Address,
+		ActivityRegionID:      e.ActivityRegionID,
+		ActivityRegion:        e.ActivityRegion,
 		ActivitySubRegion:     e.ActivitySubRegion,
 		DirectorName:          e.DirectorName,
 		SqbApiError:           e.SqbApiError,

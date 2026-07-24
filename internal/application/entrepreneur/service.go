@@ -48,6 +48,8 @@ type CreateInput struct {
 	Phone                 string
 	MhobtCode             string
 	Address               string
+	ActivityRegionID      int32
+	ActivityRegion        string
 	ActivitySubRegion     string
 	DirectorName          string
 }
@@ -68,6 +70,8 @@ type UpdateInput struct {
 	Phone                 *string
 	MhobtCode             *string
 	Address               *string
+	ActivityRegionID      *int32
+	ActivityRegion        *string
 	ActivitySubRegion     *string
 	DirectorName          *string
 }
@@ -125,6 +129,8 @@ func (s *Service) Create(ctx context.Context, input CreateInput) (*domain.Entrep
 		Phone:                 input.Phone,
 		MhobtCode:             input.MhobtCode,
 		Address:               input.Address,
+		ActivityRegionID:      input.ActivityRegionID,
+		ActivityRegion:        input.ActivityRegion,
 		ActivitySubRegion:     input.ActivitySubRegion,
 		DirectorName:          input.DirectorName,
 	}
@@ -151,7 +157,7 @@ func (s *Service) Create(ctx context.Context, input CreateInput) (*domain.Entrep
 		}
 	}
 
-	if s.bitrixClient != nil && s.bitrixClient.Enabled() && strings.HasPrefix(created.RegistrationAuthority, "birdarcha") && s.integrationUsable(ctx, "bitrix") {
+	if s.bitrixClient != nil && s.bitrixClient.Enabled() && strings.HasPrefix(created.RegistrationAuthority, "birdarcha") && created.ActivityRegionID == 1726 && s.integrationUsable(ctx, "bitrix") {
 		leadID, err := s.bitrixClient.CreateLead(ctx, created)
 		if err != nil {
 			log.Printf("bitrix: failed to create lead for entrepreneur %s: %v", created.ID, err)
@@ -258,6 +264,12 @@ func (s *Service) Update(ctx context.Context, id uuid.UUID, input UpdateInput) (
 	}
 	if input.Address != nil {
 		existing.Address = *input.Address
+	}
+	if input.ActivityRegionID != nil {
+		existing.ActivityRegionID = *input.ActivityRegionID
+	}
+	if input.ActivityRegion != nil {
+		existing.ActivityRegion = *input.ActivityRegion
 	}
 	if input.ActivitySubRegion != nil {
 		existing.ActivitySubRegion = *input.ActivitySubRegion

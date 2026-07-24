@@ -194,15 +194,6 @@ func (s *Syncer) sync(ctx context.Context) error {
 	for i := len(newItems) - 1; i >= 0; i-- {
 		item := newItems[i]
 
-		if item.ActivityRegion.ID != tashkentCityRegionID {
-			log.Printf("birdarcha-syncer: skipped non-Tashkent-city tin=%d name=%s region_id=%d region=%s", item.TIN, item.Name, item.ActivityRegion.ID, item.ActivityRegion.Name)
-			skipped++
-			if !hitFailure {
-				lastSuccessID = item.ID
-			}
-			continue
-		}
-
 		// Fetch full details
 		detail, err := s.client.FetchDetail(ctx, item.ID)
 		if err != nil {
@@ -305,6 +296,14 @@ func (s *Syncer) mapToCreateInput(item ListItem, detail *Detail) appent.CreateIn
 
 	// Address
 	address := detail.Location.ActivityAddress
+	activityRegionID := item.ActivityRegion.ID
+	activityRegion := item.ActivityRegion.Name
+	if detail.Location.ActivityRegion.ID != 0 {
+		activityRegionID = detail.Location.ActivityRegion.ID
+	}
+	if detail.Location.ActivityRegion.Name != "" {
+		activityRegion = detail.Location.ActivityRegion.Name
+	}
 	activitySubRegion := item.ActivitySubRegion.Name
 	if detail.Location.ActivitySubRegion.Name != "" {
 		activitySubRegion = detail.Location.ActivitySubRegion.Name
@@ -330,6 +329,8 @@ func (s *Syncer) mapToCreateInput(item ListItem, detail *Detail) appent.CreateIn
 		Phone:                 phone,
 		MhobtCode:             "",
 		Address:               address,
+		ActivityRegionID:      int32(activityRegionID),
+		ActivityRegion:        activityRegion,
 		ActivitySubRegion:     activitySubRegion,
 		DirectorName:          directorName,
 	}

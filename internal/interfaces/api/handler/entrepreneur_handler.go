@@ -71,6 +71,8 @@ func (h *EntrepreneurHandler) Create(c *gin.Context) {
 		Phone:                 req.Phone,
 		MhobtCode:             req.MhobtCode,
 		Address:               req.Address,
+		ActivityRegionID:      req.ActivityRegionID,
+		ActivityRegion:        req.ActivityRegion,
 		ActivitySubRegion:     req.ActivitySubRegion,
 		DirectorName:          req.DirectorName,
 	})
@@ -190,6 +192,8 @@ func (h *EntrepreneurHandler) Update(c *gin.Context) {
 		Phone:                 req.Phone,
 		MhobtCode:             req.MhobtCode,
 		Address:               req.Address,
+		ActivityRegionID:      req.ActivityRegionID,
+		ActivityRegion:        req.ActivityRegion,
 		ActivitySubRegion:     req.ActivitySubRegion,
 		DirectorName:          req.DirectorName,
 	})

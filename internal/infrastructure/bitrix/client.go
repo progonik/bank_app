@@ -186,6 +186,7 @@ func description(e *domain.Entrepreneur) string {
 		"Email: " + e.Email,
 		"Phone: " + e.Phone,
 		"MHOBT code: " + e.MhobtCode,
+		"Activity region: " + e.ActivityRegion,
 		"Activity sub-region: " + e.ActivitySubRegion,
 		"Address: " + e.Address,
 		"Director / chief: " + e.DirectorName,

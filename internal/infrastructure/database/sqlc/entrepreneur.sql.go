@@ -18,14 +18,14 @@ INSERT INTO entrepreneurs (
     inn_id, legal_name, registration_authority, registration_date,
     registration_number, legal_form, ifut_code_id, activity_type, dbibt_code,
     activity_status, charter_fund, founders, email,
-    phone, mhobt_code, address, activity_sub_region, director_name, sqb_api_error
+    phone, mhobt_code, address, activity_region_id, activity_region, activity_sub_region, director_name, sqb_api_error
 ) VALUES (
-    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19
+    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21
 )
 RETURNING id, inn_id, legal_name, registration_authority, registration_date,
     registration_number, legal_form, ifut_code_id, activity_type, dbibt_code,
     activity_status, charter_fund, founders, email,
-    phone, mhobt_code, address, activity_sub_region, director_name, sqb_api_error, created_at
+    phone, mhobt_code, address, activity_region_id, activity_region, activity_sub_region, director_name, sqb_api_error, created_at
 `
 
 type CreateEntrepreneurParams struct {
@@ -45,6 +45,8 @@ type CreateEntrepreneurParams struct {
 	Phone                 string
 	MhobtCode             string
 	Address               string
+	ActivityRegionID      int32
+	ActivityRegion        string
 	ActivitySubRegion     string
 	DirectorName          string
 	SqbApiError           sql.NullString
@@ -68,6 +70,8 @@ type CreateEntrepreneurRow struct {
 	Phone                 string
 	MhobtCode             string
 	Address               string
+	ActivityRegionID      int32
+	ActivityRegion        string
 	ActivitySubRegion     string
 	DirectorName          string
 	SqbApiError           sql.NullString
@@ -92,6 +96,8 @@ func (q *Queries) CreateEntrepreneur(ctx context.Context, arg CreateEntrepreneur
 		arg.Phone,
 		arg.MhobtCode,
 		arg.Address,
+		arg.ActivityRegionID,
+		arg.ActivityRegion,
 		arg.ActivitySubRegion,
 		arg.DirectorName,
 		arg.SqbApiError,
@@ -115,6 +121,8 @@ func (q *Queries) CreateEntrepreneur(ctx context.Context, arg CreateEntrepreneur
 		&i.Phone,
 		&i.MhobtCode,
 		&i.Address,
+		&i.ActivityRegionID,
+		&i.ActivityRegion,
 		&i.ActivitySubRegion,
 		&i.DirectorName,
 		&i.SqbApiError,
@@ -137,7 +145,7 @@ const getEntrepreneurByID = `-- name: GetEntrepreneurByID :one
 SELECT e.id, e.inn_id, i.name as inn_name, e.legal_name, e.registration_authority,
     e.registration_date, e.registration_number, e.legal_form, e.ifut_code_id,
     ic.name as ifut_code_name, e.activity_type, e.dbibt_code, e.activity_status, e.charter_fund,
-    e.founders, e.email, e.phone, e.mhobt_code, e.address, e.activity_sub_region, e.director_name,
+    e.founders, e.email, e.phone, e.mhobt_code, e.address, e.activity_region_id, e.activity_region, e.activity_sub_region, e.director_name,
     e.sqb_api_error, e.created_at
 FROM entrepreneurs e
 JOIN inns i ON e.inn_id = i.id
@@ -165,6 +173,8 @@ type GetEntrepreneurByIDRow struct {
 	Phone                 string
 	MhobtCode             string
 	Address               string
+	ActivityRegionID      int32
+	ActivityRegion        string
 	ActivitySubRegion     string
 	DirectorName          string
 	SqbApiError           sql.NullString
@@ -194,6 +204,8 @@ func (q *Queries) GetEntrepreneurByID(ctx context.Context, id uuid.UUID) (GetEnt
 		&i.Phone,
 		&i.MhobtCode,
 		&i.Address,
+		&i.ActivityRegionID,
+		&i.ActivityRegion,
 		&i.ActivitySubRegion,
 		&i.DirectorName,
 		&i.SqbApiError,
@@ -235,13 +247,15 @@ SET legal_name = $2,
     phone = $14,
     mhobt_code = $15,
     address = $16,
-    activity_sub_region = $17,
-    director_name = $18
+    activity_region_id = $17,
+    activity_region = $18,
+    activity_sub_region = $19,
+    director_name = $20
 WHERE id = $1
 RETURNING id, inn_id, legal_name, registration_authority, registration_date,
     registration_number, legal_form, ifut_code_id, activity_type, dbibt_code,
     activity_status, charter_fund, founders, email,
-    phone, mhobt_code, address, activity_sub_region, director_name, sqb_api_error, created_at
+    phone, mhobt_code, address, activity_region_id, activity_region, activity_sub_region, director_name, sqb_api_error, created_at
 `
 
 type UpdateEntrepreneurParams struct {
@@ -261,6 +275,8 @@ type UpdateEntrepreneurParams struct {
 	Phone                 string
 	MhobtCode             string
 	Address               string
+	ActivityRegionID      int32
+	ActivityRegion        string
 	ActivitySubRegion     string
 	DirectorName          string
 }
@@ -283,6 +299,8 @@ type UpdateEntrepreneurRow struct {
 	Phone                 string
 	MhobtCode             string
 	Address               string
+	ActivityRegionID      int32
+	ActivityRegion        string
 	ActivitySubRegion     string
 	DirectorName          string
 	SqbApiError           sql.NullString
@@ -307,6 +325,8 @@ func (q *Queries) UpdateEntrepreneur(ctx context.Context, arg UpdateEntrepreneur
 		arg.Phone,
 		arg.MhobtCode,
 		arg.Address,
+		arg.ActivityRegionID,
+		arg.ActivityRegion,
 		arg.ActivitySubRegion,
 		arg.DirectorName,
 	)
@@ -329,6 +349,8 @@ func (q *Queries) UpdateEntrepreneur(ctx context.Context, arg UpdateEntrepreneur
 		&i.Phone,
 		&i.MhobtCode,
 		&i.Address,
+		&i.ActivityRegionID,
+		&i.ActivityRegion,
 		&i.ActivitySubRegion,
 		&i.DirectorName,
 		&i.SqbApiError,

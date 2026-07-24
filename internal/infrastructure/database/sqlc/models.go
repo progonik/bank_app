@@ -39,6 +39,8 @@ type Entrepreneur struct {
 	SqbApiError           sql.NullString
 	ActivitySubRegion     string
 	ActivityType          string
+	ActivityRegionID      int32
+	ActivityRegion        string
 }
 
 type IfutCode struct {
