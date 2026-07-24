@@ -20,6 +20,12 @@ type Client struct {
 }
 
 type response struct {
+	Result           json.RawMessage `json:"result"`
+	Error            string          `json:"error"`
+	ErrorDescription string          `json:"error_description"`
+}
+
+type idResponse struct {
 	Result           int    `json:"result"`
 	Error            string `json:"error"`
 	ErrorDescription string `json:"error_description"`
@@ -50,7 +56,7 @@ func (c *Client) CreateLead(ctx context.Context, e *domain.Entrepreneur) (int, e
 		return 0, nil
 	}
 
-	id, err := c.call(ctx, "crm.lead.add.json", map[string]any{"fields": leadFields(e)})
+	id, err := c.callID(ctx, "crm.lead.add.json", map[string]any{"fields": leadFields(e)})
 	if err != nil {
 		return 0, fmt.Errorf("bitrix: create lead failed: %w", err)
 	}
@@ -65,20 +71,48 @@ func (c *Client) addLeadObservers(ctx context.Context, leadID int) error {
 		return nil
 	}
 
-	_, err := c.call(ctx, "crm.item.update.json", map[string]any{
+	return c.call(ctx, "crm.item.update.json", map[string]any{
 		"entityTypeId": 1,
 		"id":           leadID,
 		"fields": map[string]any{
 			"observers": bitrixObserverUserIDs,
 		},
 	})
-	return err
 }
 
-func (c *Client) call(ctx context.Context, method string, payload any) (int, error) {
+func (c *Client) callID(ctx context.Context, method string, payload any) (int, error) {
+	respBody, statusCode, err := c.doRequest(ctx, method, payload)
+	if err != nil {
+		return 0, err
+	}
+
+	var result idResponse
+	if err := json.Unmarshal(respBody, &result); err != nil {
+		return 0, fmt.Errorf("decode response status=%d body=%s: %w", statusCode, string(respBody), err)
+	}
+	if err := validateResponse(statusCode, result.Error, result.ErrorDescription); err != nil {
+		return 0, err
+	}
+	return result.Result, nil
+}
+
+func (c *Client) call(ctx context.Context, method string, payload any) error {
+	respBody, statusCode, err := c.doRequest(ctx, method, payload)
+	if err != nil {
+		return err
+	}
+
+	var result response
+	if err := json.Unmarshal(respBody, &result); err != nil {
+		return fmt.Errorf("decode response status=%d body=%s: %w", statusCode, string(respBody), err)
+	}
+	return validateResponse(statusCode, result.Error, result.ErrorDescription)
+}
+
+func (c *Client) doRequest(ctx context.Context, method string, payload any) ([]byte, int, error) {
 	body, err := json.Marshal(payload)
 	if err != nil {
-		return 0, fmt.Errorf("marshal request: %w", err)
+		return nil, 0, fmt.Errorf("marshal request: %w", err)
 	}
 
 	url := c.webhookURL + method
@@ -86,34 +120,33 @@ func (c *Client) call(ctx context.Context, method string, payload any) (int, err
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewReader(body))
 	if err != nil {
-		return 0, fmt.Errorf("create request: %w", err)
+		return nil, 0, fmt.Errorf("create request: %w", err)
 	}
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
-		return 0, fmt.Errorf("request failed: %w", err)
+		return nil, 0, fmt.Errorf("request failed: %w", err)
 	}
 	defer resp.Body.Close()
 
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return 0, fmt.Errorf("read response: %w", err)
+		return nil, 0, fmt.Errorf("read response: %w", err)
 	}
 	log.Printf("bitrix: response status=%d body=%s", resp.StatusCode, string(respBody))
+	return respBody, resp.StatusCode, nil
+}
 
-	var result response
-	if err := json.Unmarshal(respBody, &result); err != nil {
-		return 0, fmt.Errorf("decode response status=%d body=%s: %w", resp.StatusCode, string(respBody), err)
+func validateResponse(statusCode int, errorCode, errorDescription string) error {
+	if statusCode < 200 || statusCode >= 300 {
+		return fmt.Errorf("unexpected status %d: %s - %s", statusCode, errorCode, errorDescription)
 	}
-	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		return 0, fmt.Errorf("unexpected status %d: %s - %s", resp.StatusCode, result.Error, result.ErrorDescription)
+	if errorCode != "" {
+		return fmt.Errorf("%s - %s", errorCode, errorDescription)
 	}
-	if result.Error != "" {
-		return 0, fmt.Errorf("%s - %s", result.Error, result.ErrorDescription)
-	}
-	return result.Result, nil
+	return nil
 }
 
 func leadFields(e *domain.Entrepreneur) map[string]any {
