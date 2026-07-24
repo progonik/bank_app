@@ -304,6 +304,10 @@ func (s *Syncer) mapToCreateInput(item ListItem, detail *Detail) appent.CreateIn
 
 	// Address
 	address := detail.Location.ActivityAddress
+	activitySubRegion := item.ActivitySubRegion.Name
+	if detail.Location.ActivitySubRegion.Name != "" {
+		activitySubRegion = detail.Location.ActivitySubRegion.Name
+	}
 
 	// Registration number
 	regNumber := detail.RegisterNumber
@@ -324,6 +328,7 @@ func (s *Syncer) mapToCreateInput(item ListItem, detail *Detail) appent.CreateIn
 		Phone:                 phone,
 		MhobtCode:             "",
 		Address:               address,
+		ActivitySubRegion:     activitySubRegion,
 		DirectorName:          directorName,
 	}
 }

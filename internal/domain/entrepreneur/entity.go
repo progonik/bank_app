@@ -25,6 +25,7 @@ type Entrepreneur struct {
 	Phone                 string
 	MhobtCode             string
 	Address               string
+	ActivitySubRegion     string
 	DirectorName          string
 	SqbApiError           *string
 	CreatedAt             time.Time

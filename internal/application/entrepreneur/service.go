@@ -47,6 +47,7 @@ type CreateInput struct {
 	Phone                 string
 	MhobtCode             string
 	Address               string
+	ActivitySubRegion     string
 	DirectorName          string
 }
 
@@ -65,6 +66,7 @@ type UpdateInput struct {
 	Phone                 *string
 	MhobtCode             *string
 	Address               *string
+	ActivitySubRegion     *string
 	DirectorName          *string
 }
 
@@ -120,6 +122,7 @@ func (s *Service) Create(ctx context.Context, input CreateInput) (*domain.Entrep
 		Phone:                 input.Phone,
 		MhobtCode:             input.MhobtCode,
 		Address:               input.Address,
+		ActivitySubRegion:     input.ActivitySubRegion,
 		DirectorName:          input.DirectorName,
 	}
 
@@ -249,6 +252,9 @@ func (s *Service) Update(ctx context.Context, id uuid.UUID, input UpdateInput) (
 	}
 	if input.Address != nil {
 		existing.Address = *input.Address
+	}
+	if input.ActivitySubRegion != nil {
+		existing.ActivitySubRegion = *input.ActivitySubRegion
 	}
 	if input.DirectorName != nil {
 		existing.DirectorName = *input.DirectorName

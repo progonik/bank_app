@@ -104,6 +104,7 @@ func leadFields(e *domain.Entrepreneur) map[string]any {
 		"STATUS_ID":            "NEW",
 		"ASSIGNED_BY_ID":       bitrixResponsibleUserID,
 		"ADDRESS":              e.Address,
+		"ADDRESS_2":            e.ActivitySubRegion,
 		"COMMENTS":             description(e),
 		"UF_CRM_1638948461838": e.InnName,
 		"UF_CRM_UZB_INN_LEAD":  e.InnName,
@@ -132,6 +133,7 @@ func description(e *domain.Entrepreneur) string {
 		"Email: " + e.Email,
 		"Phone: " + e.Phone,
 		"MHOBT code: " + e.MhobtCode,
+		"Activity sub-region: " + e.ActivitySubRegion,
 		"Address: " + e.Address,
 		"Director / chief: " + e.DirectorName,
 	}

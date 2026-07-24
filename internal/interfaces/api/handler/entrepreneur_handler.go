@@ -70,6 +70,7 @@ func (h *EntrepreneurHandler) Create(c *gin.Context) {
 		Phone:                 req.Phone,
 		MhobtCode:             req.MhobtCode,
 		Address:               req.Address,
+		ActivitySubRegion:     req.ActivitySubRegion,
 		DirectorName:          req.DirectorName,
 	})
 	if err != nil {
@@ -187,6 +188,7 @@ func (h *EntrepreneurHandler) Update(c *gin.Context) {
 		Phone:                 req.Phone,
 		MhobtCode:             req.MhobtCode,
 		Address:               req.Address,
+		ActivitySubRegion:     req.ActivitySubRegion,
 		DirectorName:          req.DirectorName,
 	})
 	if err != nil {
