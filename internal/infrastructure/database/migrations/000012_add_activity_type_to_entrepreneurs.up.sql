@@ -1,0 +1,2 @@
+ALTER TABLE entrepreneurs
+ADD COLUMN activity_type VARCHAR(500) NOT NULL DEFAULT '';

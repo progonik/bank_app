@@ -16,6 +16,7 @@ type CreateEntrepreneurRequest struct {
 	RegistrationNumber    string `json:"registration_number"`
 	LegalForm             string `json:"legal_form"`
 	IfutCode              string `json:"ifut_code"`
+	ActivityType          string `json:"activity_type"`
 	DbibtCode             int32  `json:"dbibt_code"`
 	ActivityStatus        *bool  `json:"activity_status"`
 	CharterFund           int32  `json:"charter_fund"`
@@ -35,6 +36,7 @@ type UpdateEntrepreneurRequest struct {
 	RegistrationNumber    *string `json:"registration_number"`
 	LegalForm             *string `json:"legal_form"`
 	IfutCode              *string `json:"ifut_code"`
+	ActivityType          *string `json:"activity_type"`
 	DbibtCode             *int32  `json:"dbibt_code"`
 	ActivityStatus        *bool   `json:"activity_status"`
 	CharterFund           *int32  `json:"charter_fund"`
@@ -58,6 +60,7 @@ type EntrepreneurResponse struct {
 	LegalForm             string     `json:"legal_form"`
 	IfutCodeID            *uuid.UUID `json:"ifut_code_id"`
 	IfutCodeName          string     `json:"ifut_code_name"`
+	ActivityType          string     `json:"activity_type"`
 	DbibtCode             int32      `json:"dbibt_code"`
 	ActivityStatus        bool       `json:"activity_status"`
 	CharterFund           int32      `json:"charter_fund"`
@@ -95,6 +98,7 @@ func NewEntrepreneurResponse(e *domain.Entrepreneur) EntrepreneurResponse {
 		LegalForm:             e.LegalForm,
 		IfutCodeID:            e.IfutCodeID,
 		IfutCodeName:          e.IfutCodeName,
+		ActivityType:          e.ActivityType,
 		DbibtCode:             e.DbibtCode,
 		ActivityStatus:        e.ActivityStatus,
 		CharterFund:           e.CharterFund,

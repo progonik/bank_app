@@ -17,6 +17,7 @@ type Entrepreneur struct {
 	LegalForm             string
 	IfutCodeID            *uuid.UUID
 	IfutCodeName          string
+	ActivityType          string
 	DbibtCode             int32
 	ActivityStatus        bool
 	CharterFund           int32

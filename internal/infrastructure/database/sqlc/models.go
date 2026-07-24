@@ -38,6 +38,7 @@ type Entrepreneur struct {
 	IfutCodeID            uuid.NullUUID
 	SqbApiError           sql.NullString
 	ActivitySubRegion     string
+	ActivityType          string
 }
 
 type IfutCode struct {

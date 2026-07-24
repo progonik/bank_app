@@ -294,6 +294,7 @@ func (s *Syncer) mapToCreateInput(item ListItem, detail *Detail) appent.CreateIn
 
 	// OKED/IFUT code
 	ifutCode := detail.OKED.ID
+	activityType := detail.OKED.Name
 
 	// Phone and email from detail
 	phone := detail.Location.Phone
@@ -320,6 +321,7 @@ func (s *Syncer) mapToCreateInput(item ListItem, detail *Detail) appent.CreateIn
 		RegistrationNumber:    regNumber,
 		LegalForm:             legalForm,
 		IfutCode:              ifutCode,
+		ActivityType:          activityType,
 		DbibtCode:             0,
 		ActivityStatus:        activityStatus,
 		CharterFund:           charterFund,

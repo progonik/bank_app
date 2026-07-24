@@ -39,6 +39,7 @@ type CreateInput struct {
 	RegistrationNumber    string
 	LegalForm             string
 	IfutCode              string
+	ActivityType          string
 	DbibtCode             int32
 	ActivityStatus        bool
 	CharterFund           int32
@@ -58,6 +59,7 @@ type UpdateInput struct {
 	RegistrationNumber    *string
 	LegalForm             *string
 	IfutCode              *string
+	ActivityType          *string
 	DbibtCode             *int32
 	ActivityStatus        *bool
 	CharterFund           *int32
@@ -114,6 +116,7 @@ func (s *Service) Create(ctx context.Context, input CreateInput) (*domain.Entrep
 		LegalForm:             input.LegalForm,
 		IfutCodeID:            ifutCodeID,
 		IfutCodeName:          ifutCodeName,
+		ActivityType:          input.ActivityType,
 		DbibtCode:             input.DbibtCode,
 		ActivityStatus:        input.ActivityStatus,
 		CharterFund:           input.CharterFund,
@@ -228,6 +231,9 @@ func (s *Service) Update(ctx context.Context, id uuid.UUID, input UpdateInput) (
 			existing.IfutCodeID = &ifutRecord.ID
 			existing.IfutCodeName = ifutRecord.Name
 		}
+	}
+	if input.ActivityType != nil {
+		existing.ActivityType = *input.ActivityType
 	}
 	if input.DbibtCode != nil {
 		existing.DbibtCode = *input.DbibtCode

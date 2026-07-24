@@ -128,7 +128,7 @@ func leadFields(e *domain.Entrepreneur) map[string]any {
 		"COMMENTS":             description(e),
 		"UF_CRM_1638948461838": e.InnName,
 		"UF_CRM_UZB_INN_LEAD":  e.InnName,
-		"UF_CRM_1638948478586": e.IfutCodeName,
+		"UF_CRM_1638948478586": activityTypeDisplay(e),
 	}
 	if e.Phone != "" {
 		fields["PHONE"] = []map[string]string{{"VALUE": e.Phone, "VALUE_TYPE": "WORK"}}
@@ -146,7 +146,7 @@ func description(e *domain.Entrepreneur) string {
 		"Registration date: " + e.RegistrationDate,
 		"Registration number: " + e.RegistrationNumber,
 		"Legal form: " + legalFormDisplay(e.LegalForm),
-		"OKED / IFUT: " + e.IfutCodeName,
+		"OKED / IFUT: " + activityTypeDisplay(e),
 		"Activity status: " + activityStatus(e.ActivityStatus),
 		"Charter fund: " + fmt.Sprintf("%d", e.CharterFund),
 		"Founders: " + e.Founders,
@@ -167,6 +167,18 @@ func taskTitle(e *domain.Entrepreneur) string {
 		return name
 	}
 	return form + " " + name
+}
+
+func activityTypeDisplay(e *domain.Entrepreneur) string {
+	code := strings.TrimSpace(e.IfutCodeName)
+	name := strings.TrimSpace(e.ActivityType)
+	if code == "" {
+		return name
+	}
+	if name == "" {
+		return code
+	}
+	return code + " - " + name
 }
 
 func legalFormDisplay(id string) string {

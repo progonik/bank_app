@@ -33,6 +33,7 @@ func (r *EntrepreneurRepository) Create(ctx context.Context, e *domain.Entrepren
 		RegistrationNumber:    e.RegistrationNumber,
 		LegalForm:             e.LegalForm,
 		IfutCodeID:            toNullUUID(e.IfutCodeID),
+		ActivityType:          e.ActivityType,
 		DbibtCode:             e.DbibtCode,
 		ActivityStatus:        e.ActivityStatus,
 		CharterFund:           e.CharterFund,
@@ -71,6 +72,7 @@ func (r *EntrepreneurRepository) Update(ctx context.Context, e *domain.Entrepren
 		RegistrationNumber:    e.RegistrationNumber,
 		LegalForm:             e.LegalForm,
 		IfutCodeID:            toNullUUID(e.IfutCodeID),
+		ActivityType:          e.ActivityType,
 		DbibtCode:             e.DbibtCode,
 		ActivityStatus:        e.ActivityStatus,
 		CharterFund:           e.CharterFund,
@@ -111,7 +113,7 @@ func (r *EntrepreneurRepository) GetAllWithSqbError(ctx context.Context, limit, 
 
 	dataQuery := `SELECT e.id, e.inn_id, i.name, e.legal_name, e.registration_authority,
 		e.registration_date, e.registration_number, e.legal_form, e.ifut_code_id,
-		ic.name, e.dbibt_code, e.activity_status, e.charter_fund, e.founders, e.email,
+		ic.name, e.activity_type, e.dbibt_code, e.activity_status, e.charter_fund, e.founders, e.email,
 		e.phone, e.mhobt_code, e.address, e.activity_sub_region, e.director_name, e.sqb_api_error, e.created_at
 	FROM entrepreneurs e
 	JOIN inns i ON e.inn_id = i.id
@@ -134,7 +136,7 @@ func (r *EntrepreneurRepository) GetAllWithSqbError(ctx context.Context, limit, 
 		if err := rows.Scan(
 			&e.ID, &e.InnID, &e.InnName, &e.LegalName, &e.RegistrationAuthority,
 			&e.RegistrationDate, &e.RegistrationNumber, &e.LegalForm, &ifutCodeID,
-			&ifutCodeName, &e.DbibtCode, &e.ActivityStatus, &e.CharterFund, &e.Founders,
+			&ifutCodeName, &e.ActivityType, &e.DbibtCode, &e.ActivityStatus, &e.CharterFund, &e.Founders,
 			&e.Email, &e.Phone, &e.MhobtCode, &e.Address, &e.ActivitySubRegion, &e.DirectorName, &sqbApiError, &e.CreatedAt,
 		); err != nil {
 			return nil, 0, fmt.Errorf("failed to scan entrepreneur: %w", err)
@@ -213,7 +215,7 @@ func (r *EntrepreneurRepository) GetAll(ctx context.Context, filter domain.Entre
 	dataQuery := fmt.Sprintf(
 		`SELECT e.id, e.inn_id, i.name, e.legal_name, e.registration_authority,
 			e.registration_date, e.registration_number, e.legal_form, e.ifut_code_id,
-			ic.name, e.dbibt_code, e.activity_status, e.charter_fund, e.founders, e.email,
+			ic.name, e.activity_type, e.dbibt_code, e.activity_status, e.charter_fund, e.founders, e.email,
 			e.phone, e.mhobt_code, e.address, e.activity_sub_region, e.director_name, e.sqb_api_error, e.created_at
 		FROM entrepreneurs e
 		JOIN inns i ON e.inn_id = i.id
@@ -238,7 +240,7 @@ func (r *EntrepreneurRepository) GetAll(ctx context.Context, filter domain.Entre
 		if err := rows.Scan(
 			&e.ID, &e.InnID, &e.InnName, &e.LegalName, &e.RegistrationAuthority,
 			&e.RegistrationDate, &e.RegistrationNumber, &e.LegalForm, &ifutCodeID,
-			&ifutCodeName, &e.DbibtCode, &e.ActivityStatus, &e.CharterFund, &e.Founders,
+			&ifutCodeName, &e.ActivityType, &e.DbibtCode, &e.ActivityStatus, &e.CharterFund, &e.Founders,
 			&e.Email, &e.Phone, &e.MhobtCode, &e.Address, &e.ActivitySubRegion, &e.DirectorName, &sqbApiError, &e.CreatedAt,
 		); err != nil {
 			return nil, 0, fmt.Errorf("failed to scan entrepreneur: %w", err)
@@ -301,6 +303,7 @@ func mapCreateRow(e sqlc.CreateEntrepreneurRow, innName, ifutCodeName string) *d
 		LegalForm:             e.LegalForm,
 		IfutCodeID:            fromNullUUID(e.IfutCodeID),
 		IfutCodeName:          ifutCodeName,
+		ActivityType:          e.ActivityType,
 		DbibtCode:             e.DbibtCode,
 		ActivityStatus:        e.ActivityStatus,
 		CharterFund:           e.CharterFund,
@@ -332,6 +335,7 @@ func mapGetByIDRow(e sqlc.GetEntrepreneurByIDRow) *domain.Entrepreneur {
 		LegalForm:             e.LegalForm,
 		IfutCodeID:            fromNullUUID(e.IfutCodeID),
 		IfutCodeName:          ifutCodeName,
+		ActivityType:          e.ActivityType,
 		DbibtCode:             e.DbibtCode,
 		ActivityStatus:        e.ActivityStatus,
 		CharterFund:           e.CharterFund,
@@ -359,6 +363,7 @@ func mapUpdateRow(e sqlc.UpdateEntrepreneurRow, innName, ifutCodeName string) *d
 		LegalForm:             e.LegalForm,
 		IfutCodeID:            fromNullUUID(e.IfutCodeID),
 		IfutCodeName:          ifutCodeName,
+		ActivityType:          e.ActivityType,
 		DbibtCode:             e.DbibtCode,
 		ActivityStatus:        e.ActivityStatus,
 		CharterFund:           e.CharterFund,
