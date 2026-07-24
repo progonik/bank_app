@@ -25,9 +25,9 @@ type response struct {
 	ErrorDescription string `json:"error_description"`
 }
 
-const bitrixResponsibleUserID = 31
+const bitrixResponsibleUserID = 1153
 
-var bitrixObserverUserIDs = []int{1153}
+var bitrixObserverUserIDs = []int{31}
 
 func NewClient(webhookURL string) *Client {
 	webhookURL = strings.TrimSpace(webhookURL)
